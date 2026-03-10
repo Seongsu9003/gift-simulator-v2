@@ -2,23 +2,27 @@
    CSS 변수 (Design Tokens)
 ======================== */
 :root {
-    --bg: #1C1C1E;
-    --panel: #2C2C2E;
-    --panel-elevated: #3A3A3C;
-    --input-bg: #3A3A3C;
-    --orange: #FF9F0A;
-    --orange-glow: rgba(255, 159, 10, 0.22);
-    --orange-dim: rgba(255, 159, 10, 0.10);
-    --text-primary: #FFFFFF;
-    --text-secondary: rgba(235, 235, 245, 0.75);
-    --text-muted: rgba(235, 235, 245, 0.38);
-    --border: rgba(255, 255, 255, 0.07);
-    --success: #30D158;
-    --danger: #FF453A;
-    --radius-lg: 24px;
-    --radius-md: 16px;
-    --radius-sm: 12px;
+    --bg: #F2F2F7;
+    --panel: #FFFFFF;
+    --panel-secondary: #F2F2F7;
+    --input-bg: #F2F2F7;
+    --orange: #FF9500;
+    --orange-glow: rgba(255, 149, 0, 0.18);
+    --orange-dim: rgba(255, 149, 0, 0.08);
+    --text-primary: #1C1C1E;
+    --text-secondary: #3C3C43;
+    --text-muted: #8E8E93;
+    --border: rgba(60, 60, 67, 0.12);
+    --border-focus: rgba(255, 149, 0, 0.5);
+    --success: #34C759;
+    --success-bg: rgba(52, 199, 89, 0.08);
+    --danger: #FF3B30;
+    --danger-bg: rgba(255, 59, 48, 0.08);
+    --radius-lg: 20px;
+    --radius-md: 14px;
+    --radius-sm: 10px;
     --radius-pill: 100px;
+    --shadow-panel: 0 2px 16px rgba(0, 0, 0, 0.06), 0 1px 4px rgba(0, 0, 0, 0.04);
 }
 
 /* ========================
@@ -36,7 +40,7 @@ body {
     color: var(--text-primary);
     display: flex;
     justify-content: center;
-    padding: 48px 20px 72px;
+    padding: 44px 20px 72px;
     min-height: 100vh;
 }
 
@@ -46,7 +50,7 @@ body {
 .calculator-wrapper {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 16px;
     width: 100%;
     max-width: 1100px;
 }
@@ -57,9 +61,9 @@ body {
         align-items: flex-start;
     }
     .input-panel {
-        flex: 0 0 420px;
+        flex: 0 0 430px;
         position: sticky;
-        top: 48px;
+        top: 44px;
     }
     .result-panel {
         flex: 1;
@@ -71,21 +75,21 @@ body {
 ======================== */
 .panel {
     background-color: var(--panel);
-    padding: 36px 32px;
+    padding: 32px 28px;
     border-radius: var(--radius-lg);
-    border: 1px solid var(--border);
+    box-shadow: var(--shadow-panel);
 }
 
 /* ========================
    타이포그래피
 ======================== */
 h2 {
-    color: var(--orange);
+    color: var(--text-primary);
     text-align: center;
-    font-size: 1.2em;
+    font-size: 1.18em;
     font-weight: 800;
     letter-spacing: -0.5px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
 p.subtitle {
@@ -93,21 +97,21 @@ p.subtitle {
     text-align: center;
     font-size: 0.88em;
     line-height: 1.65;
-    margin-bottom: 32px;
+    margin-bottom: 28px;
     word-break: keep-all;
 }
 
 /* ========================
-   입력 그룹
+   섹션 구분선
 ======================== */
-.input-group { margin-bottom: 20px; }
+.input-group { margin-bottom: 18px; }
 .no-margin { margin-bottom: 0; }
-.flex-row { display: flex; gap: 12px; }
+.flex-row { display: flex; gap: 10px; }
 .flex-row .input-group { flex: 1; }
 
 label {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 7px;
     color: var(--text-secondary);
     font-weight: 600;
     font-size: 0.83em;
@@ -123,7 +127,6 @@ label {
 
 .accent-label {
     color: var(--orange);
-    opacity: 0.85;
 }
 
 /* ========================
@@ -143,7 +146,7 @@ label {
     background: var(--input-bg);
     border: 1.5px solid transparent;
     border-radius: var(--radius-sm);
-    padding: 13px 16px;
+    padding: 12px 14px;
     cursor: pointer;
     transition: border-color 0.2s ease, background 0.2s ease;
 }
@@ -159,7 +162,7 @@ label {
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    border: 2px solid var(--text-muted);
+    border: 2px solid var(--border);
     flex-shrink: 0;
     cursor: pointer;
     transition: border-color 0.2s ease;
@@ -197,12 +200,12 @@ label {
 }
 
 /* ========================
-   Input & Select (Fill 스타일)
+   Input & Select
 ======================== */
 input[type="number"],
 select {
     width: 100%;
-    padding: 13px 16px;
+    padding: 12px 14px;
     background: var(--input-bg);
     border: 1.5px solid transparent;
     border-radius: var(--radius-sm);
@@ -210,7 +213,7 @@ select {
     font-size: 0.97em;
     font-family: inherit;
     font-weight: 500;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
     -webkit-appearance: none;
     appearance: none;
 }
@@ -218,6 +221,7 @@ select {
 input[type="number"]:focus:not([readonly]),
 select:focus {
     outline: none;
+    background: #FFFFFF;
     border-color: var(--orange);
     box-shadow: 0 0 0 4px var(--orange-glow);
 }
@@ -225,6 +229,7 @@ select:focus {
 input[readonly] {
     color: var(--text-muted);
     cursor: not-allowed;
+    background: #E5E5EA;
 }
 
 /* 숫자 스피너 제거 */
@@ -241,7 +246,7 @@ input[type="number"]::-webkit-outer-spin-button {
 .select-wrapper::after {
     content: '▾';
     position: absolute;
-    right: 16px;
+    right: 14px;
     top: 50%;
     transform: translateY(-50%);
     color: var(--text-muted);
@@ -249,60 +254,55 @@ input[type="number"]::-webkit-outer-spin-button {
     font-size: 0.9em;
 }
 
-select option {
-    background: #2C2C2E;
-    color: var(--text-primary);
-}
-
 /* ========================
    안내 박스
 ======================== */
 .notice-box {
-    background: rgba(255, 159, 10, 0.07);
-    border: 1px solid rgba(255, 159, 10, 0.18);
-    padding: 12px 16px;
+    background: rgba(255, 149, 0, 0.07);
+    border: 1px solid rgba(255, 149, 0, 0.2);
+    padding: 11px 14px;
     border-radius: var(--radius-sm);
     font-size: 0.82em;
-    color: rgba(255, 159, 10, 0.85);
-    margin-bottom: 16px;
+    color: #C0710A;
+    margin-bottom: 14px;
     line-height: 1.55;
 }
 
 /* ========================
    유틸리티
 ======================== */
-.hidden-group { display: none; margin-bottom: 20px; }
+.hidden-group { display: none; margin-bottom: 18px; }
 
 /* ========================
-   메인 버튼 (iOS 계산기 스타일)
+   메인 버튼
 ======================== */
 .primary-btn {
     width: 100%;
-    padding: 18px 24px;
+    padding: 16px 24px;
     background: var(--orange);
-    color: #1C1C1E;
+    color: #FFFFFF;
     border: none;
     border-radius: var(--radius-pill);
-    font-size: 1.05em;
+    font-size: 1em;
     font-weight: 800;
     font-family: inherit;
     letter-spacing: -0.2px;
     cursor: pointer;
-    margin-top: 24px;
+    margin-top: 20px;
     transition: filter 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
-    box-shadow: 0 6px 28px rgba(255, 159, 10, 0.32);
+    box-shadow: 0 4px 20px rgba(255, 149, 0, 0.28);
     -webkit-tap-highlight-color: transparent;
 }
 
 .primary-btn:hover {
-    filter: brightness(1.07);
-    box-shadow: 0 10px 36px rgba(255, 159, 10, 0.4);
+    filter: brightness(1.06);
+    box-shadow: 0 8px 28px rgba(255, 149, 0, 0.36);
 }
 
 .primary-btn:active {
-    transform: scale(0.96);
-    filter: brightness(0.94);
-    box-shadow: 0 2px 10px rgba(255, 159, 10, 0.2);
+    transform: scale(0.97);
+    filter: brightness(0.95);
+    box-shadow: 0 2px 8px rgba(255, 149, 0, 0.18);
     transition: transform 0.08s ease, filter 0.08s ease;
 }
 
@@ -316,28 +316,28 @@ select option {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    min-height: 320px;
-    gap: 14px;
+    min-height: 300px;
+    gap: 12px;
 }
 
-.placeholder-msg span { font-size: 3em; }
+.placeholder-msg span { font-size: 2.8em; }
 .placeholder-msg p { line-height: 1.6; font-size: 0.93em; }
 
 .result-content {
     display: none;
     flex-direction: column;
-    gap: 18px;
+    gap: 16px;
 }
 
 /* 결과 카드 */
 .result-card {
-    background: var(--panel-elevated);
-    padding: 24px;
+    background: var(--panel-secondary);
+    padding: 22px 20px;
     border-radius: var(--radius-md);
     border-left: 4px solid var(--orange);
 }
 
-.result-item { margin-bottom: 20px; }
+.result-item { margin-bottom: 18px; }
 .result-item:last-child { margin-bottom: 0; }
 
 .result-item span.title {
@@ -346,28 +346,28 @@ select option {
     font-size: 0.76em;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.6px;
-    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+    margin-bottom: 5px;
 }
 
 .result-item span.value {
     display: block;
     color: var(--text-primary);
-    font-size: 1.75em;
+    font-size: 1.65em;
     font-weight: 700;
     letter-spacing: -0.5px;
 }
 
 .highlight {
     color: var(--orange) !important;
-    font-size: 2.1em !important;
+    font-size: 2em !important;
 }
 
 /* 설명 텍스트 박스 */
 .explanation {
-    background: var(--panel-elevated);
-    border: 1px dashed rgba(255, 159, 10, 0.25);
-    padding: 20px 22px;
+    background: var(--panel-secondary);
+    border: 1.5px dashed rgba(255, 149, 0, 0.3);
+    padding: 18px 20px;
     border-radius: var(--radius-md);
     font-size: 0.91em;
     color: var(--text-secondary);
@@ -390,9 +390,9 @@ select option {
 
 /* 세금 팁 박스 */
 .tax-tip {
-    background: var(--panel-elevated);
-    border: 1px solid rgba(48, 209, 88, 0.18);
-    padding: 20px 22px;
+    background: var(--success-bg);
+    border: 1px solid rgba(52, 199, 89, 0.25);
+    padding: 18px 20px;
     border-radius: var(--radius-md);
     font-size: 0.88em;
     color: var(--text-secondary);
@@ -400,7 +400,7 @@ select option {
 }
 
 .tax-tip h4 {
-    color: var(--success);
+    color: #1A8A3C;
     font-weight: 700;
     margin-bottom: 10px;
 }
@@ -413,7 +413,7 @@ select option {
     position: relative;
     width: 100%;
     min-height: 280px;
-    background: var(--panel-elevated);
+    background: var(--panel-secondary);
     border-radius: var(--radius-md);
-    padding: 20px;
+    padding: 16px;
 }

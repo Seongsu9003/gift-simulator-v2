@@ -186,14 +186,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 maintainAspectRatio: false,
                 scales: {
                     x: {
-                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                        ticks: { color: 'rgba(235, 235, 245, 0.38)', font: { size: 11 } }
+                        grid: { color: 'rgba(60, 60, 67, 0.08)' },
+                        ticks: { color: '#8E8E93', font: { size: 11 } }
                     },
                     y: {
                         beginAtZero: true,
-                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        grid: { color: 'rgba(60, 60, 67, 0.08)' },
                         ticks: {
-                            color: 'rgba(235, 235, 245, 0.38)',
+                            color: '#8E8E93',
                             font: { size: 11 },
                             callback: function(value) {
                                 return (value / 100000000).toFixed(1) + '억';
@@ -205,17 +205,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 plugins: {
                     legend: {
                         labels: {
-                            color: 'rgba(235, 235, 245, 0.6)',
+                            color: '#3C3C43',
                             font: { size: 12, weight: '600' },
                             usePointStyle: true,
                             pointStyleWidth: 10
                         }
                     },
                     tooltip: {
-                        backgroundColor: '#2C2C2E',
-                        titleColor: 'rgba(235, 235, 245, 0.55)',
-                        bodyColor: '#FFFFFF',
-                        borderColor: 'rgba(255, 255, 255, 0.08)',
+                        backgroundColor: '#FFFFFF',
+                        titleColor: '#8E8E93',
+                        bodyColor: '#1C1C1E',
+                        borderColor: 'rgba(60, 60, 67, 0.15)',
                         borderWidth: 1,
                         padding: 12,
                         callbacks: {
