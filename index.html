@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -120,10 +121,53 @@
                 <div class="chart-container">
                     <canvas id="growthChart"></canvas>
                 </div>
+
+                <button id="btnDownload" class="download-btn">📸 확약서 이미지로 저장하기</button>
             </div>
         </div>
     </div>
 
+</div>
+
+<!-- 캡처용 인증서 템플릿 (평소 숨김) -->
+<div id="captureTemplate">
+    <div class="cert-card" id="certCard">
+        <div class="cert-top-bar"></div>
+
+        <div class="cert-header">
+            <span class="cert-brand">타버지가 만든 증여계산기</span>
+            <h1 class="cert-title">📜 우리아이 증여 확약서</h1>
+        </div>
+
+        <div class="cert-main-block">
+            <p class="cert-section-label">아이가 <span id="capTargetAge"></span>살이 될 때, 아빠가 쥐여줄 총 자금</p>
+            <p class="cert-main-value" id="capFuture"></p>
+            <p class="cert-main-approx" id="capFutureApprox"></p>
+        </div>
+
+        <div class="cert-divider"></div>
+
+        <div class="cert-sub-block">
+            <div class="cert-sub-row">
+                <span class="cert-sub-label">목표 선물의 미래 가격</span>
+                <div class="cert-sub-right">
+                    <span class="cert-sub-value" id="capGoal"></span>
+                    <span class="cert-sub-approx" id="capGoalApprox"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="cert-chart-wrap">
+            <img id="capChartImg" src="" alt="자산 성장 차트">
+        </div>
+
+        <div class="cert-footer">
+            <span id="capDate"></span>
+            <span>gift-simulator-v2.vercel.app</span>
+        </div>
+
+        <div class="cert-stamp">30세<br>방 빼기<br>확정</div>
+    </div>
 </div>
 
 <script src="script.js"></script>

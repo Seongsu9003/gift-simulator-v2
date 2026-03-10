@@ -66,6 +66,46 @@ document.addEventListener('DOMContentLoaded', () => {
     radioSeedYes.addEventListener('change', toggleSeedInput);
     radioSeedNo.addEventListener('change', toggleSeedInput);
     btnCalculate.addEventListener('click', calculate);
+    document.getElementById('btnDownload').addEventListener('click', downloadCertificate);
+
+    // ── 확약서 이미지 다운로드 ─────────────────────────────
+    async function downloadCertificate() {
+        // 1. 결과값 채우기
+        document.getElementById('capTargetAge').textContent     = document.getElementById('resTargetAgeText').textContent;
+        document.getElementById('capFuture').textContent        = document.getElementById('resFuture').textContent;
+        document.getElementById('capFutureApprox').textContent  = document.getElementById('resFutureApprox').textContent;
+        document.getElementById('capGoal').textContent          = document.getElementById('resGoal').textContent;
+        document.getElementById('capGoalApprox').textContent    = document.getElementById('resGoalApprox').textContent;
+        document.getElementById('capDate').textContent          = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
+
+        // 2. 차트 캔버스를 이미지로 변환
+        document.getElementById('capChartImg').src = document.getElementById('growthChart').toDataURL('image/png');
+
+        // 3. 템플릿을 잠시 화면에 노출 (html2canvas 렌더링을 위해)
+        const template = document.getElementById('captureTemplate');
+        template.style.left = '0';
+
+        try {
+            // 4. html2canvas 캡처
+            const canvas = await html2canvas(document.getElementById('certCard'), {
+                scale: 2,
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: '#ffffff',
+                logging: false
+            });
+
+            // 5. 다운로드
+            const link = document.createElement('a');
+            link.download = 'tabuji-promise.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        } finally {
+            // 6. 템플릿 다시 숨기기
+            template.style.left = '-9999px';
+        }
+    }
+    // ─────────────────────────────────────────────────────
 
     // 씨드머니 입력창 토글 함수
     function toggleSeedInput() {
