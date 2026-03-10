@@ -159,20 +159,25 @@ document.addEventListener('DOMContentLoaded', () => {
                     {
                         label: '아빠의 펀드 자금',
                         data: dataFuture,
-                        borderColor: '#e67e22',
-                        backgroundColor: 'rgba(230, 126, 34, 0.1)',
-                        borderWidth: 3,
+                        borderColor: '#FF9F0A',
+                        backgroundColor: 'rgba(255, 159, 10, 0.10)',
+                        borderWidth: 2.5,
+                        pointBackgroundColor: '#FF9F0A',
+                        pointRadius: 0,
+                        pointHoverRadius: 5,
                         fill: true,
-                        tension: 0.3
+                        tension: 0.4
                     },
                     {
                         label: `${giftName} 예상 가격`,
                         data: dataGoal,
-                        borderColor: '#c0392b',
-                        borderWidth: 3,
-                        borderDash: [5, 5],
+                        borderColor: '#FF453A',
+                        borderWidth: 2,
+                        borderDash: [5, 4],
+                        pointRadius: 0,
+                        pointHoverRadius: 5,
                         fill: false,
-                        tension: 0.3
+                        tension: 0.4
                     }
                 ]
             },
@@ -180,25 +185,45 @@ document.addEventListener('DOMContentLoaded', () => {
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
+                    x: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: 'rgba(235, 235, 245, 0.38)', font: { size: 11 } }
+                    },
                     y: {
                         beginAtZero: true,
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
                         ticks: {
+                            color: 'rgba(235, 235, 245, 0.38)',
+                            font: { size: 11 },
                             callback: function(value) {
-                                return (value / 100000000).toFixed(1) + '억'; 
+                                return (value / 100000000).toFixed(1) + '억';
                             }
                         }
                     }
                 },
                 interaction: { mode: 'index', intersect: false },
                 plugins: {
+                    legend: {
+                        labels: {
+                            color: 'rgba(235, 235, 245, 0.6)',
+                            font: { size: 12, weight: '600' },
+                            usePointStyle: true,
+                            pointStyleWidth: 10
+                        }
+                    },
                     tooltip: {
+                        backgroundColor: '#2C2C2E',
+                        titleColor: 'rgba(235, 235, 245, 0.55)',
+                        bodyColor: '#FFFFFF',
+                        borderColor: 'rgba(255, 255, 255, 0.08)',
+                        borderWidth: 1,
+                        padding: 12,
                         callbacks: {
                             title: function(context) { return `아이가 ${context[0].label} 때`; },
                             label: function(context) {
                                 let label = context.dataset.label || '';
                                 if (label) { label += ': '; }
                                 if (context.parsed.y !== null) {
-                                    // 툴팁에서도 숫자를 만원 단위로 깔끔하게 포맷팅
                                     label += Math.round(context.parsed.y / 10000).toLocaleString() + '만 원';
                                 }
                                 return label;
