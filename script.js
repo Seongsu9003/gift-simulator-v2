@@ -133,19 +133,28 @@ document.addEventListener('DOMContentLoaded', () => {
         const labels = [];
         const dataFuture = [];
         const dataGoal = [];
+        const dataSavings = [];
+
+        const savingsMonthlyRate = 0.03 / 12; // 예적금 고정 연 3%
 
         for (let i = 1; i <= years; i++) {
-            labels.push((currentAge + i) + '세'); 
+            labels.push((currentAge + i) + '세');
             let m = i * 12;
-            
+
             let currentFvSeed = seedAmount * Math.pow(1 + monthlyRate, m);
             let currentFvMonthly = monthlyRate === 0 ? monthly * m : monthly * ((Math.pow(1 + monthlyRate, m) - 1) / monthlyRate);
             let totalFv = currentFvSeed + currentFvMonthly;
-            
+
             let gv = giftCurrentValue * Math.pow(1 + inflation, i);
+
+            // 예적금 (연 3% 고정) - 씨드머니 거치식 + 매월 납입 적립식
+            let svSeed = seedAmount * Math.pow(1 + savingsMonthlyRate, m);
+            let svMonthly = monthly * ((Math.pow(1 + savingsMonthlyRate, m) - 1) / savingsMonthlyRate);
+            let totalSv = svSeed + svMonthly;
 
             dataFuture.push(Math.round(totalFv));
             dataGoal.push(Math.round(gv));
+            dataSavings.push(Math.round(totalSv));
         }
 
         const ctx = document.getElementById('growthChart').getContext('2d');
@@ -163,6 +172,18 @@ document.addEventListener('DOMContentLoaded', () => {
                         backgroundColor: 'rgba(255, 159, 10, 0.10)',
                         borderWidth: 2.5,
                         pointBackgroundColor: '#FF9F0A',
+                        pointRadius: 0,
+                        pointHoverRadius: 5,
+                        fill: true,
+                        tension: 0.4
+                    },
+                    {
+                        label: '일반 예적금 (연 3%)',
+                        data: dataSavings,
+                        borderColor: '#5A8FD6',
+                        backgroundColor: 'rgba(90, 143, 214, 0.06)',
+                        borderWidth: 2,
+                        borderDash: [4, 3],
                         pointRadius: 0,
                         pointHoverRadius: 5,
                         fill: true,

@@ -10,108 +10,115 @@
 </head>
 <body>
 
-<div class="calculator-wrapper">
-    <div class="panel input-panel">
-        <h2>🧳 '서른 살엔 독립해라' 계산기</h2>
-        <p class="subtitle">우리 아이가 어른이 되는 날,<br>아빠의 사랑과 투자는 어떤 결과를 낳을까요?</p>
+<div class="page-wrapper">
 
-        <div class="input-group">
-            <label>0. 이미 자녀 이름으로 찔러넣어 준 돈이 있나요?</label>
-            <div class="radio-group">
-                <div class="radio-option">
-                    <input type="radio" name="hasSeed" id="seedYes" value="yes"> 
-                    <label for="seedYes">네, 이미 피 같은 씨드머니가 들어갔죠</label>
-                </div>
-                <div class="radio-option">
-                    <input type="radio" name="hasSeed" id="seedNo" value="no" checked> 
-                    <label for="seedNo">아니요, 지금부터 시작입니다 (0원)</label>
-                </div>
-            </div>
-        </div>
-
-        <div id="seedAmountGroup" class="hidden-group">
-            <div class="notice-box">
-                💡 <b>안내:</b> 통장에 모여있는 '현재 가치'를 입력해 주세요. 이 금액도 앞으로 넣을 돈과 함께 굴러갑니다.
-            </div>
-            <div class="input-group">
-                <label class="accent-label">↳ 국세청에 증여세로 신고하셨습니까? 신고한 금액만 입력해주세요</label>
-                <input type="number" id="seedAmount" value="2000000">
-            </div>
-            <div class="input-group no-margin">
-                <label class="accent-label">↳ 국세청에 신고할때 아이가 몇살이였나요?</label>
-                <input type="number" id="seedAge" value="3" placeholder="예: 3">
-            </div>
-        </div>
-
-        <div class="flex-row">
-            <div class="input-group">
-                <label>1. 아이의 현재 나이 (세)</label>
-                <input type="number" id="currentAge" value="10">
-            </div>
-            <div class="input-group">
-                <label>2. 목표 독립 나이 (세)</label>
-                <input type="number" id="targetAge" value="30">
-            </div>
-        </div>
-
-        <div class="input-group">
-            <label>3. 앞으로 매월 추가로 넣을 돈 (원)</label>
-            <input type="number" id="monthly" value="100000">
-        </div>
-        
-        <div class="flex-row">
-            <div class="input-group">
-                <label>4. 투자 수익률 (%) <span class="label-desc">S&P500 기준</span></label>
-                <input type="number" id="rate" value="10.5">
-            </div>
-            <div class="input-group">
-                <label>5. 물가상승률 (%) 🔒</label>
-                <input type="number" id="inflation" value="3.5" readonly title="최근 3년 평균 물가상승률(약 3.5%) 고정">
-            </div>
-        </div>
-
-        <div class="input-group" style="margin-bottom: 5px;">
-            <label>6. 아이가 독립할 때 내가 해주고 싶은 선물은?</label>
-            <div class="select-wrapper">
-                <select id="gift">
-                    <option value="40000000" selected>🎓 학자금 대출 상환 (현재가치: 4천만원)</option>
-                    <option value="100000000">💍 결혼 준비 자금 (현재가치: 1억원)</option>
-                    <option value="200000000">📈 투자 씨드머니 (현재가치: 2억원)</option>
-                    <option value="300000000">🏠 주택 마련 씨드머니 (현재가치: 3억원)</option>
-                </select>
-            </div>
-        </div>
-
-        <button id="btnCalculate" class="primary-btn">우리 아이 독립 시뮬레이션 돌리기! 🚀</button>
+    <div class="hero-section">
+        <h2>🧳 아빠의 '서른 살엔 독립해라' 계산기</h2>
+        <p class="subtitle">우리 아이가 어른이 되는 날, 아빠의 사랑과 투자는 어떤 결과를 낳을까요?</p>
     </div>
 
-    <div class="panel result-panel">
-        <div class="placeholder-msg" id="placeholderMsg">
-            <span>👈</span>
-            <p>좌측에 조건을 모두 입력한 뒤<br><b>[시뮬레이션 돌리기]</b> 버튼을 눌러주세요!</p>
-        </div>
+    <div class="calculator-wrapper">
+        <div class="panel input-panel">
 
-        <div class="result-content" id="resultContent">
-            <div class="result-card">
-                <div class="result-item">
-                    <span class="title">아이가 <span id="resTargetAgeText">0</span>살이 될 때 아빠가 쥐여줄 총 자금</span>
-                    <span class="value highlight" id="resFuture">0원</span>
-                </div>
-                <div class="result-item">
-                    <span class="title">내가 해주고픈 선물의 미래 가격 (물가 펀치 맞음)</span>
-                    <span class="value" id="resGoal">0원</span>
+            <div class="input-group">
+                <label>0. 이미 자녀 이름으로 찔러넣어 준 돈이 있나요?</label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" name="hasSeed" id="seedYes" value="yes">
+                        <label for="seedYes">네, 이미 피 같은 씨드머니가 들어갔죠</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" name="hasSeed" id="seedNo" value="no" checked>
+                        <label for="seedNo">아니요, 지금부터 시작입니다 (0원)</label>
+                    </div>
                 </div>
             </div>
-            
-            <div class="explanation" id="resText"></div>
-            
-            <div id="taxTipBox"></div>
 
-            <div class="chart-container">
-                <canvas id="growthChart"></canvas>
+            <div id="seedAmountGroup" class="hidden-group">
+                <div class="notice-box">
+                    💡 <b>안내:</b> 통장에 모여있는 '현재 가치'를 입력해 주세요. 이 금액도 앞으로 넣을 돈과 함께 굴러갑니다.
+                </div>
+                <div class="input-group">
+                    <label class="accent-label">↳ 국세청에 증여세로 신고하셨습니까? 신고한 금액만 입력해주세요</label>
+                    <input type="number" id="seedAmount" value="2000000">
+                </div>
+                <div class="input-group no-margin">
+                    <label class="accent-label">↳ 국세청에 신고할때 아이가 몇살이였나요?</label>
+                    <input type="number" id="seedAge" value="3" placeholder="예: 3">
+                </div>
+            </div>
+
+            <div class="flex-row">
+                <div class="input-group">
+                    <label>1. 아이의 현재 나이 (세)</label>
+                    <input type="number" id="currentAge" value="10">
+                </div>
+                <div class="input-group">
+                    <label>2. 목표 독립 나이 (세)</label>
+                    <input type="number" id="targetAge" value="30">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>3. 앞으로 매월 추가로 넣을 돈 (원)</label>
+                <input type="number" id="monthly" value="100000">
+            </div>
+
+            <div class="flex-row">
+                <div class="input-group">
+                    <label>4. 증여 기간 동안 예상하는 연평균 투자 수익률 (%) <span class="label-desc">S&P500 기준</span></label>
+                    <input type="number" id="rate" value="10.5">
+                </div>
+                <div class="input-group">
+                    <label>5. 물가상승률 (%) 🔒</label>
+                    <input type="number" id="inflation" value="3.5" readonly title="최근 3년 평균 물가상승률(약 3.5%) 고정">
+                </div>
+            </div>
+
+            <div class="input-group" style="margin-bottom: 5px;">
+                <label>6. 아이가 독립할 때 내가 해주고 싶은 선물은?</label>
+                <div class="select-wrapper">
+                    <select id="gift">
+                        <option value="40000000" selected>🎓 학자금 대출 상환 (현재가치: 4천만원)</option>
+                        <option value="100000000">💍 결혼 준비 자금 (현재가치: 1억원)</option>
+                        <option value="200000000">📈 투자 씨드머니 (현재가치: 2억원)</option>
+                        <option value="300000000">🏠 주택 마련 씨드머니 (현재가치: 3억원)</option>
+                    </select>
+                </div>
+            </div>
+
+            <button id="btnCalculate" class="primary-btn">우리 아이 독립 시뮬레이션 돌리기! 🚀</button>
+        </div>
+
+        <div class="panel result-panel">
+            <div class="placeholder-msg" id="placeholderMsg">
+                <span>👈</span>
+                <p>좌측에 조건을 모두 입력한 뒤<br><b>[시뮬레이션 돌리기]</b> 버튼을 눌러주세요!</p>
+            </div>
+
+            <div class="result-content" id="resultContent">
+                <div class="result-card">
+                    <div class="result-item">
+                        <span class="title">아이가 <span id="resTargetAgeText">0</span>살이 될 때 아빠가 쥐여줄 총 자금</span>
+                        <span class="value highlight" id="resFuture">0원</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="title">내가 해주고픈 선물의 미래 가격 (물가 펀치 맞음)</span>
+                        <span class="value" id="resGoal">0원</span>
+                    </div>
+                </div>
+
+                <div class="explanation" id="resText"></div>
+
+                <div id="taxTipBox"></div>
+
+                <div class="chart-container">
+                    <canvas id="growthChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
+
 </div>
 
 <script src="script.js"></script>
