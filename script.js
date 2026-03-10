@@ -1,0 +1,212 @@
+document.addEventListener('DOMContentLoaded', () => {
+    let myChart = null;
+
+    // DOM 요소 캐싱 (미리 찾아두기)
+    const radioSeedYes = document.getElementById('seedYes');
+    const radioSeedNo = document.getElementById('seedNo');
+    const seedAmountGroup = document.getElementById('seedAmountGroup');
+    const btnCalculate = document.getElementById('btnCalculate');
+
+    // 이벤트 리스너 등록
+    radioSeedYes.addEventListener('change', toggleSeedInput);
+    radioSeedNo.addEventListener('change', toggleSeedInput);
+    btnCalculate.addEventListener('click', calculate);
+
+    // 씨드머니 입력창 토글 함수
+    function toggleSeedInput() {
+        const hasSeed = radioSeedYes.checked;
+        seedAmountGroup.style.display = hasSeed ? 'block' : 'none';
+    }
+
+    // 메인 계산 로직
+    function calculate() {
+        const hasSeed = radioSeedYes.checked;
+        const seedAmount = hasSeed ? parseFloat(document.getElementById('seedAmount').value) : 0;
+        const seedAge = hasSeed ? parseInt(document.getElementById('seedAge').value) : null;
+
+        const currentAge = parseInt(document.getElementById('currentAge').value);
+        const targetAge = parseInt(document.getElementById('targetAge').value);
+        
+        if (targetAge <= currentAge) {
+            alert("독립 나이는 현재 나이보다 커야 합니다! 다시 입력해 주세요.");
+            return;
+        }
+
+        if (hasSeed && (seedAge === null || seedAge > currentAge)) {
+            alert("증여 신고 나이는 아이의 현재 나이보다 작거나 같아야 합니다!");
+            return;
+        }
+        
+        const years = targetAge - currentAge;
+        const monthly = parseFloat(document.getElementById('monthly').value);
+        const rate = parseFloat(document.getElementById('rate').value) / 100;
+        const inflation = parseFloat(document.getElementById('inflation').value) / 100;
+        
+        const giftSelect = document.getElementById('gift');
+        const giftCurrentValue = parseFloat(giftSelect.value);
+        const giftName = giftSelect.options[giftSelect.selectedIndex].text.split(' (')[0]; 
+
+        const monthlyRate = rate / 12;
+        const totalMonths = years * 12;
+        
+        // 거치식 + 적립식 복리
+        let fvSeed = seedAmount * Math.pow(1 + monthlyRate, totalMonths);
+        let fvMonthly = monthlyRate === 0 ? (monthly * totalMonths) : monthly * ((Math.pow(1 + monthlyRate, totalMonths) - 1) / monthlyRate);
+        let finalFutureValue = fvSeed + fvMonthly;
+        
+        // 선물의 미래 가치
+        const finalGiftValue = giftCurrentValue * Math.pow(1 + inflation, years);
+
+        // 결과창 UI 전환
+        document.getElementById('placeholderMsg').style.display = 'none';
+        document.getElementById('resultContent').style.display = 'flex';
+
+        document.getElementById('resTargetAgeText').innerText = targetAge;
+        document.getElementById('resFuture').innerText = Math.round(finalFutureValue).toLocaleString() + "원";
+        document.getElementById('resGoal').innerText = Math.round(finalGiftValue).toLocaleString() + "원";
+
+        let seedText = hasSeed ? `아빠가 미리 신고해둔 <b>${Math.round(seedAmount/10000).toLocaleString()}만 원</b>이 같이 굴러가서 힘을 꽤 썼어! ` : ``;
+
+        let resultMsg = "";
+        if (finalFutureValue >= finalGiftValue) {
+            resultMsg = `<span class="success-msg">🎉 경축! 네가 ${targetAge}살이 되는 해, 우리는 목표를 달성했다!</span><br>${seedText}네가 받고 싶어 할 '${giftName}'의 미래 가격보다 무려 <b>${Math.round(finalFutureValue - finalGiftValue).toLocaleString()}원</b>이나 여유가 있구나. 아빠가 해주고 싶은 선물 확실히 챙겨줄 테니, 약속대로 ${targetAge}살엔 쿨하게 독립하는 거다? 😎`;
+        } else {
+            resultMsg = `<span class="fail-msg">😭 아차... 물가의 벽이 높구나...</span><br>${seedText}아무리 열심히 굴려도 '${giftName}'을 온전히 사주기엔 <b>${Math.round(finalGiftValue - finalFutureValue).toLocaleString()}원</b>이 모자라네. 네가 ${targetAge}살이 되기 전에 아빠가 투자금을 늘리든지, 아니면 선물을 조금 타협해야 할지도 모르겠다. 🤦‍♂️`;
+        }
+
+        const text = `💌 <b>아빠의 팩트 폭격 편지:</b><br>네가 고른 <b>${giftName}</b>, 지금은 ${Math.round(giftCurrentValue/10000).toLocaleString()}만 원이지만 네가 ${targetAge}살이 되는 ${years}년 뒤엔 물가가 올라서 무려 <b>${Math.round(finalGiftValue).toLocaleString()}원</b>이 된단다.<br><br>${resultMsg}`;
+        
+        document.getElementById('resText').innerHTML = text;
+
+        // --- 증여세 스케줄 로직 고도화 ---
+        let firstReportAge = hasSeed ? seedAge : currentAge;
+        let scheduleHtml = `
+            <div class="tax-tip">
+                <h4>💡 아빠를 위한 절세 꿀팁: 우리 아이 증여세 비과세 마일스톤</h4>
+                <p style="margin-top:0; margin-bottom:12px; font-size: 0.9em; color: #5f6368;">
+                    증여세 비과세 한도는 <b>10년마다 갱신</b>됩니다.<br>
+                    (미성년자 2천만 원, 성인 5천만 원) 기간 내에는 남은 한도만큼 세금 없이 더 줄 수 있습니다!
+                </p>
+                <ul style="line-height: 1.8;">
+        `;
+
+        let currentReportAge = firstReportAge;
+        let isFirstCycle = true;
+
+        while(currentReportAge <= targetAge) {
+            let limitAmountNum = currentReportAge >= 19 ? 50000000 : 20000000;
+            let limitAmountTxt = currentReportAge >= 19 ? "5,000만 원" : "2,000만 원";
+            let personStatus = currentReportAge >= 19 ? "성인" : "미성년자";
+            let cycleEndAge = currentReportAge + 9;
+            
+            let isPast = currentReportAge < currentAge;
+
+            if (isFirstCycle && hasSeed) {
+                let remaining = Math.max(0, limitAmountNum - seedAmount);
+                scheduleHtml += `<li style="color:#9aa0a6;"><del style='color:#bdc3c7;'><b>${currentReportAge}세</b> : 최초 신고 완료 (${Math.round(seedAmount/10000).toLocaleString()}만 원)</del></li>`;
+                
+                if (remaining > 0 && currentAge <= cycleEndAge) {
+                    scheduleHtml += `<li style="list-style-type: none; padding-left: 15px; margin-top: -5px; margin-bottom: 10px;">
+                        <span style="color:#d35400; font-weight:bold;">↳ 🚨 아직 한도가 남았어요! ${cycleEndAge}세까지 <span style="background-color:#ffecb3; padding:2px 6px; border-radius:4px; color:#b94a00;">${Math.round(remaining/10000).toLocaleString()}만 원</span> 추가 비과세 가능!</span>
+                    </li>`;
+                } else if (remaining > 0 && currentAge > cycleEndAge) {
+                    scheduleHtml += `<li style="list-style-type: none; padding-left: 15px; margin-top: -5px; margin-bottom: 10px;">
+                        <span style="font-size:0.85em; color:#bdc3c7;">↳ <del>(남은 한도 ${Math.round(remaining/10000).toLocaleString()}만 원은 ${cycleEndAge}세가 지나 소멸되었습니다)</del></span>
+                    </li>`;
+                }
+            } else {
+                let timeLabel = isPast ? "(이미 지남)" : (currentReportAge === currentAge ? "(지금 당장!)" : "(예정)");
+                let boldStart = isPast ? "<del style='color:#bdc3c7;'>" : "<b>";
+                let boldEnd = isPast ? "</del>" : "</b>";
+                let textColor = isPast ? "color:#9aa0a6;" : "color:#202124;";
+
+                scheduleHtml += `<li style="${textColor}">${boldStart}${currentReportAge}세 ${timeLabel} : ${limitAmountTxt} 비과세 한도 갱신 (${personStatus})${boldEnd}</li>`;
+            }
+            
+            currentReportAge += 10;
+            isFirstCycle = false;
+        }
+        scheduleHtml += `</ul></div>`;
+        document.getElementById('taxTipBox').innerHTML = scheduleHtml;
+
+        // 차트 그리기
+        const labels = [];
+        const dataFuture = [];
+        const dataGoal = [];
+
+        for (let i = 1; i <= years; i++) {
+            labels.push((currentAge + i) + '세'); 
+            let m = i * 12;
+            
+            let currentFvSeed = seedAmount * Math.pow(1 + monthlyRate, m);
+            let currentFvMonthly = monthlyRate === 0 ? monthly * m : monthly * ((Math.pow(1 + monthlyRate, m) - 1) / monthlyRate);
+            let totalFv = currentFvSeed + currentFvMonthly;
+            
+            let gv = giftCurrentValue * Math.pow(1 + inflation, i);
+
+            dataFuture.push(Math.round(totalFv));
+            dataGoal.push(Math.round(gv));
+        }
+
+        const ctx = document.getElementById('growthChart').getContext('2d');
+        if (myChart !== null) { myChart.destroy(); }
+
+        myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: '아빠의 펀드 자금',
+                        data: dataFuture,
+                        borderColor: '#e67e22',
+                        backgroundColor: 'rgba(230, 126, 34, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.3
+                    },
+                    {
+                        label: `${giftName} 예상 가격`,
+                        data: dataGoal,
+                        borderColor: '#c0392b',
+                        borderWidth: 3,
+                        borderDash: [5, 5],
+                        fill: false,
+                        tension: 0.3
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return (value / 100000000).toFixed(1) + '억'; 
+                            }
+                        }
+                    }
+                },
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            title: function(context) { return `아이가 ${context[0].label} 때`; },
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) { label += ': '; }
+                                if (context.parsed.y !== null) {
+                                    // 툴팁에서도 숫자를 만원 단위로 깔끔하게 포맷팅
+                                    label += Math.round(context.parsed.y / 10000).toLocaleString() + '만 원';
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+});
