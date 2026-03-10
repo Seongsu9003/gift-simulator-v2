@@ -12,15 +12,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const num = Math.floor(parseFloat(value));
         if (!value || isNaN(num) || num <= 0) return '';
 
-        const eok = Math.floor(num / 100000000);
-        const man = Math.floor((num % 100000000) / 10000);
+        const eok  = Math.floor(num / 100000000);           // 억 단위
+        const man  = Math.floor((num % 100000000) / 10000); // 만 단위
+        const rest = num % 10000;                           // 나머지 (천~일)
 
         const parts = [];
-        if (eok > 0) parts.push(eok.toLocaleString() + '억');
-        if (man > 0) parts.push(man.toLocaleString() + '만');
+        if (eok  > 0) parts.push(eok.toLocaleString()  + '억');
+        if (man  > 0) parts.push(man.toLocaleString()  + '만');
+        if (rest > 0) parts.push(rest.toLocaleString());    // 숫자만, 뒤에 원 붙임
 
-        if (parts.length === 0) return num.toLocaleString() + ' 원';
-        return '≈ ' + parts.join(' ') + ' 원';
+        if (parts.length === 0) return '≈ ' + num.toLocaleString() + '원';
+        return '≈ ' + parts.join(' ') + '원';
     }
 
     function updateHelper(inputEl, helperEl) {
