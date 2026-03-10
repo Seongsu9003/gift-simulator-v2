@@ -7,6 +7,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const seedAmountGroup = document.getElementById('seedAmountGroup');
     const btnCalculate = document.getElementById('btnCalculate');
 
+    // ── 한글 요약 금액 (백만 단위 절삭) ─────────────────────
+    function formatApproximateCurrency(num) {
+        if (!num || num <= 0) return '';
+
+        const truncated = Math.floor(num / 1000000); // 백만 단위 이하 절삭
+        if (truncated === 0) return '';
+
+        const eok = Math.floor(truncated / 100);      // 억 단위
+        const man = (truncated % 100) * 100;          // 만 단위 (65백만 → 6,500만)
+
+        const parts = [];
+        if (eok > 0) parts.push(eok.toLocaleString() + '억');
+        if (man > 0) parts.push(man.toLocaleString() + '만');
+
+        if (parts.length === 0) return '';
+        return '약 ' + parts.join(' ') + ' 원';
+    }
+
     // ── 한글 금액 변환 유틸리티 ──────────────────────────
     function formatKoreanAmount(value) {
         const num = Math.floor(parseFloat(value));
@@ -100,7 +118,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.getElementById('resTargetAgeText').innerText = targetAge;
         document.getElementById('resFuture').innerText = Math.round(finalFutureValue).toLocaleString() + "원";
+        document.getElementById('resFutureApprox').innerText = formatApproximateCurrency(Math.round(finalFutureValue));
         document.getElementById('resGoal').innerText = Math.round(finalGiftValue).toLocaleString() + "원";
+        document.getElementById('resGoalApprox').innerText = formatApproximateCurrency(Math.round(finalGiftValue));
 
         let seedText = hasSeed ? `아빠가 미리 신고해둔 <b>${Math.round(seedAmount/10000).toLocaleString()}만 원</b>이 같이 굴러가서 힘을 꽤 썼어! ` : ``;
 
