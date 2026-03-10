@@ -7,6 +7,41 @@ document.addEventListener('DOMContentLoaded', () => {
     const seedAmountGroup = document.getElementById('seedAmountGroup');
     const btnCalculate = document.getElementById('btnCalculate');
 
+    // ── 한글 금액 변환 유틸리티 ──────────────────────────
+    function formatKoreanAmount(value) {
+        const num = Math.floor(parseFloat(value));
+        if (!value || isNaN(num) || num <= 0) return '';
+
+        const eok = Math.floor(num / 100000000);
+        const man = Math.floor((num % 100000000) / 10000);
+
+        const parts = [];
+        if (eok > 0) parts.push(eok.toLocaleString() + '억');
+        if (man > 0) parts.push(man.toLocaleString() + '만');
+
+        if (parts.length === 0) return num.toLocaleString() + ' 원';
+        return '≈ ' + parts.join(' ') + ' 원';
+    }
+
+    function updateHelper(inputEl, helperEl) {
+        helperEl.textContent = formatKoreanAmount(inputEl.value);
+    }
+
+    // 헬퍼 대상 요소
+    const seedAmountInput = document.getElementById('seedAmount');
+    const seedAmountHelper = document.getElementById('seedAmountHelper');
+    const monthlyInput = document.getElementById('monthly');
+    const monthlyHelper = document.getElementById('monthlyHelper');
+
+    // 실시간 이벤트
+    seedAmountInput.addEventListener('input', () => updateHelper(seedAmountInput, seedAmountHelper));
+    monthlyInput.addEventListener('input', () => updateHelper(monthlyInput, monthlyHelper));
+
+    // 초기값 표시
+    updateHelper(seedAmountInput, seedAmountHelper);
+    updateHelper(monthlyInput, monthlyHelper);
+    // ─────────────────────────────────────────────────────
+
     // 이벤트 리스너 등록
     radioSeedYes.addEventListener('change', toggleSeedInput);
     radioSeedNo.addEventListener('change', toggleSeedInput);

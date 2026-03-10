@@ -269,6 +269,20 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 /* ========================
+   한글 금액 변환 헬퍼
+======================== */
+.amount-helper {
+    font-size: 0.83em;
+    font-weight: 700;
+    color: var(--orange);
+    margin-top: 7px;
+    padding-left: 2px;
+    min-height: 1.1em;
+    letter-spacing: -0.2px;
+    transition: opacity 0.15s ease;
+}
+
+/* ========================
    안내 박스
 ======================== */
 .notice-box {
