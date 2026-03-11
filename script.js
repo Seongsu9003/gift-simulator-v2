@@ -336,6 +336,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (myChart !== null) { myChart.destroy(); }
 
         const isMobile = window.innerWidth <= 600;
+        const chartDataDisplay = document.getElementById('chartDataDisplay');
 
         myChart = new Chart(ctx, {
             type: 'line',
@@ -430,34 +431,50 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     },
                     tooltip: {
-                        enabled: true,
-                        backgroundColor: 'rgba(255, 255, 255, 0.96)',
-                        titleColor: '#111111',
-                        titleFont: { size: 13, weight: 'bold' },
-                        bodyColor: '#444444',
-                        bodyFont: { size: 12 },
-                        borderColor: 'rgba(0, 0, 0, 0.08)',
-                        borderWidth: 1,
-                        padding: isMobile ? 10 : 14,
-                        cornerRadius: 12,
-                        boxPadding: 6,
-                        usePointStyle: true,
-                        callbacks: {
-                            title: function(context) { return `${context[0].label} 독립 시점`; },
-                            label: function(context) {
-                                let label = context.dataset.label || '';
-                                if (label) { label += ': '; }
-                                if (context.parsed.y !== null) {
-                                    const val = context.parsed.y;
+                        enabled: false, // 기존 툴팁 비활성화
+                        external: function(context) {
+                            // 툴팁 데이터 추출
+                            const tooltipModel = context.tooltip;
+                            if (tooltipModel.opacity === 0) {
+                                // 호버가 끝나도 마지막 데이터를 유지하거나 초기 상태로 되돌릴 수 있음
+                                return;
+                            }
+
+                            if (tooltipModel.body) {
+                                const title = tooltipModel.title[0] || '';
+                                const bodyLines = tooltipModel.body.map(b => b.lines);
+                                
+                                let html = `
+                                    <div class="display-header">
+                                        <span class="display-age">👶 ${title}</span>
+                                    </div>
+                                    <div class="display-body">
+                                `;
+
+                                tooltipModel.dataPoints.forEach(function(point) {
+                                    const label = point.dataset.label;
+                                    const val = point.raw;
+                                    let formattedVal = "";
+                                    
                                     if (val >= 100000000) {
                                         const eok = Math.floor(val / 100000000);
                                         const man = Math.round((val % 100000000) / 10000);
-                                        label += (eok > 0 ? `${eok}억 ` : '') + (man > 0 ? `${man}만` : '') + '원';
+                                        formattedVal = (eok > 0 ? `${eok}억 ` : '') + (man > 0 ? `${man}만` : '') + '원';
                                     } else {
-                                        label += Math.round(val / 10000).toLocaleString() + '만 원';
+                                        formattedVal = Math.round(val / 10000).toLocaleString() + '만 원';
                                     }
-                                }
-                                return label;
+
+                                    const isHighlight = label === '아빠의 운용 자금';
+                                    html += `
+                                        <div class="display-row">
+                                            <span class="display-label">${label}</span>
+                                            <span class="display-value ${isHighlight ? 'highlight' : ''}">${formattedVal}</span>
+                                        </div>
+                                    `;
+                                });
+
+                                html += '</div>';
+                                chartDataDisplay.innerHTML = html;
                             }
                         }
                     }

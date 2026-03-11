@@ -1071,7 +1071,7 @@ input[type="number"]::-webkit-outer-spin-button {
     width: 100%;
     min-height: 300px;
     background: var(--panel-secondary);
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius-lg);
     padding: 20px;
 }
 
@@ -1081,6 +1081,77 @@ input[type="number"]::-webkit-outer-spin-button {
         padding: 12px;
     }
 }
+
+/* 실시간 차트 데이터 요약창 */
+.chart-data-display {
+    margin-top: 20px;
+    padding: 20px;
+    background: #FFFFFF;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    min-height: 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.display-placeholder {
+    color: var(--text-muted);
+    font-size: 0.9em;
+    text-align: center;
+    font-weight: 500;
+}
+
+.display-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.display-age {
+    font-weight: 800;
+    color: var(--text-primary);
+    font-size: 1.1em;
+}
+
+.display-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.display-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9em;
+}
+
+.display-label {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.display-value {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.display-value.highlight {
+    color: var(--orange-500) !important;
+}
+
+@media (max-width: 600px) {
+    .chart-data-display {
+        padding: 16px;
+        margin-top: 16px;
+    }
+}
+
 
 /* ========================
    다운로드 버튼 (filled)
