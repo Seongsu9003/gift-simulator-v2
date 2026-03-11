@@ -335,41 +335,45 @@ document.addEventListener('DOMContentLoaded', () => {
         const ctx = document.getElementById('growthChart').getContext('2d');
         if (myChart !== null) { myChart.destroy(); }
 
+        const isMobile = window.innerWidth <= 600;
+
         myChart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: labels,
                 datasets: [
                     {
-                        label: '아빠가 운용한 씨드머니',
+                        label: '아빠의 운용 자금',
                         data: dataFuture,
-                        borderColor: '#FF9F0A',
-                        backgroundColor: 'rgba(255, 159, 10, 0.10)',
-                        borderWidth: 2.5,
-                        pointBackgroundColor: '#FF9F0A',
+                        borderColor: '#FF9500',
+                        backgroundColor: 'rgba(255, 149, 0, 0.08)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#FF9500',
                         pointRadius: 0,
-                        pointHoverRadius: 5,
+                        pointHoverRadius: 6,
+                        pointHoverBorderColor: '#fff',
+                        pointHoverBorderWidth: 2,
                         fill: true,
                         tension: 0.4
                     },
                     {
-                        label: '일반 예적금 (연 3%)',
+                        label: '일반 예적금 (3%)',
                         data: dataSavings,
-                        borderColor: '#5A8FD6',
-                        backgroundColor: 'rgba(90, 143, 214, 0.06)',
+                        borderColor: '#4299E1',
+                        backgroundColor: 'rgba(66, 153, 225, 0.05)',
                         borderWidth: 2,
-                        borderDash: [4, 3],
+                        borderDash: [5, 5],
                         pointRadius: 0,
                         pointHoverRadius: 5,
                         fill: true,
                         tension: 0.4
                     },
                     {
-                        label: `${giftName} 예상 가격`,
+                        label: '선물 미래 가격',
                         data: dataGoal,
-                        borderColor: '#FF453A',
+                        borderColor: '#D63939',
                         borderWidth: 2,
-                        borderDash: [5, 4],
+                        borderDash: [3, 3],
                         pointRadius: 0,
                         pointHoverRadius: 5,
                         fill: false,
@@ -380,19 +384,33 @@ document.addEventListener('DOMContentLoaded', () => {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                layout: {
+                    padding: {
+                        top: 10,
+                        bottom: isMobile ? 10 : 0
+                    }
+                },
                 scales: {
                     x: {
-                        grid: { color: 'rgba(60, 60, 67, 0.08)' },
-                        ticks: { color: '#8E8E93', font: { size: 11 } }
+                        grid: { display: false },
+                        ticks: { 
+                            color: '#868E96', 
+                            font: { size: isMobile ? 10 : 11 },
+                            maxRotation: 0,
+                            autoSkip: true,
+                            maxTicksLimit: isMobile ? 6 : 10
+                        }
                     },
                     y: {
                         beginAtZero: true,
-                        grid: { color: 'rgba(60, 60, 67, 0.08)' },
+                        grid: { color: 'rgba(0, 0, 0, 0.04)', drawBorder: false },
                         ticks: {
-                            color: '#8E8E93',
-                            font: { size: 11 },
+                            color: '#868E96',
+                            font: { size: isMobile ? 10 : 11 },
                             callback: function(value) {
-                                return (value / 100000000).toFixed(1) + '억';
+                                if (value >= 100000000) return (value / 100000000).toFixed(1) + '억';
+                                if (value >= 10000) return (value / 10000).toLocaleString() + '만';
+                                return value.toLocaleString();
                             }
                         }
                     }
@@ -400,27 +418,44 @@ document.addEventListener('DOMContentLoaded', () => {
                 interaction: { mode: 'index', intersect: false },
                 plugins: {
                     legend: {
+                        position: isMobile ? 'bottom' : 'top',
+                        align: isMobile ? 'center' : 'end',
                         labels: {
-                            color: '#3C3C43',
-                            font: { size: 12, weight: '600' },
+                            boxWidth: 8,
+                            boxHeight: 8,
                             usePointStyle: true,
-                            pointStyleWidth: 10
+                            padding: isMobile ? 15 : 20,
+                            color: '#444444',
+                            font: { size: isMobile ? 11 : 12, weight: '600' }
                         }
                     },
                     tooltip: {
-                        backgroundColor: '#FFFFFF',
-                        titleColor: '#8E8E93',
-                        bodyColor: '#1C1C1E',
-                        borderColor: 'rgba(60, 60, 67, 0.15)',
+                        enabled: true,
+                        backgroundColor: 'rgba(255, 255, 255, 0.96)',
+                        titleColor: '#111111',
+                        titleFont: { size: 13, weight: 'bold' },
+                        bodyColor: '#444444',
+                        bodyFont: { size: 12 },
+                        borderColor: 'rgba(0, 0, 0, 0.08)',
                         borderWidth: 1,
-                        padding: 12,
+                        padding: isMobile ? 10 : 14,
+                        cornerRadius: 12,
+                        boxPadding: 6,
+                        usePointStyle: true,
                         callbacks: {
-                            title: function(context) { return `아이가 ${context[0].label} 때`; },
+                            title: function(context) { return `${context[0].label} 독립 시점`; },
                             label: function(context) {
                                 let label = context.dataset.label || '';
                                 if (label) { label += ': '; }
                                 if (context.parsed.y !== null) {
-                                    label += Math.round(context.parsed.y / 10000).toLocaleString() + '만 원';
+                                    const val = context.parsed.y;
+                                    if (val >= 100000000) {
+                                        const eok = Math.floor(val / 100000000);
+                                        const man = Math.round((val % 100000000) / 10000);
+                                        label += (eok > 0 ? `${eok}억 ` : '') + (man > 0 ? `${man}만` : '') + '원';
+                                    } else {
+                                        label += Math.round(val / 10000).toLocaleString() + '만 원';
+                                    }
                                 }
                                 return label;
                             }
