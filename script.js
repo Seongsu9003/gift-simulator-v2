@@ -238,6 +238,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     const man = Math.floor(maxMonthly / 10000);
                     const cheon = Math.floor((maxMonthly % 10000) / 1000);
                     const maxMonthlyTxt = cheon > 0 ? `${man}만 ${cheon}천 원` : `${man}만 원`;
+                    const overLimitHtml = monthly > maxMonthly ? `
+                            <div class="annuity-overlimit">⚠️ 현재 월 납입금(${Math.round(monthly / 10000)}만 원)이 비과세 한도를 초과합니다. 초과분에 대해 증여세가 과세될 수 있습니다.</div>` : '';
                     annuityHtml = `
                         <div class="milestone-annuity">
                             <div class="milestone-annuity-title">📈 적립식 정기증여 비과세 한도 (유기정기금 3%)</div>
@@ -246,6 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <span class="annuity-max">월 ${maxMonthlyTxt}</span>
                             </div>
                             <div class="annuity-note">증여세 50만 원 이하는 과세미달로 실제 세금 없음</div>
+                            ${overLimitHtml}
                         </div>`;
                 }
             }

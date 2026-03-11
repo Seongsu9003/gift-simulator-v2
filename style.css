@@ -661,6 +661,17 @@ input[type="number"]::-webkit-outer-spin-button {
     font-size: 0.85em;
 }
 
+.annuity-overlimit {
+    margin-top: 7px;
+    padding: 7px 10px;
+    background: rgba(255, 59, 48, 0.08);
+    border: 1px solid rgba(255, 59, 48, 0.25);
+    border-radius: 7px;
+    color: #CC2200;
+    font-size: 0.88em;
+    font-weight: 500;
+}
+
 /* ========================
    차트 컨테이너
 ======================== */
