@@ -162,16 +162,16 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('resGoal').innerText = Math.round(finalGiftValue).toLocaleString() + "원";
         document.getElementById('resGoalApprox').innerText = formatApproximateCurrency(Math.round(finalGiftValue));
 
-        let seedText = hasSeed ? `아빠가 미리 신고해둔 <b>${Math.round(seedAmount/10000).toLocaleString()}만 원</b>이 같이 굴러가서 힘을 꽤 썼어! ` : ``;
+        let seedText = hasSeed ? `기존에 준비한 씨드머니 <b>${Math.round(seedAmount/10000).toLocaleString()}만 원</b>이 함께 운용되어 좋은 결과를 냈습니다. ` : ``;
 
         let resultMsg = "";
         if (finalFutureValue >= finalGiftValue) {
-            resultMsg = `<span class="success-msg">🎉 경축! 네가 ${targetAge}살이 되는 해, 우리는 목표를 달성했다!</span><br>${seedText}네가 받고 싶어 할 '${giftName}'의 미래 가격보다 무려 <b>${Math.round(finalFutureValue - finalGiftValue).toLocaleString()}원</b>이나 여유가 있구나. 아빠가 해주고 싶은 선물 확실히 챙겨줄 테니, 약속대로 ${targetAge}살엔 쿨하게 독립하는 거다? 😎`;
+            resultMsg = `<span class="success-msg">✅ 목표 달성! ${targetAge}살에 목표 자금을 준비할 수 있습니다.</span><br>${seedText}'${giftName}'의 미래 가격보다 <b>${Math.round(finalFutureValue - finalGiftValue).toLocaleString()}원</b>의 여유가 있습니다. 지금처럼 꾸준히 이어가면 우리 아이에게 큰 선물을 전할 수 있어요. 👍`;
         } else {
-            resultMsg = `<span class="fail-msg">😭 아차... 물가의 벽이 높구나...</span><br>${seedText}아무리 열심히 굴려도 '${giftName}'을 온전히 사주기엔 <b>${Math.round(finalGiftValue - finalFutureValue).toLocaleString()}원</b>이 모자라네. 네가 ${targetAge}살이 되기 전에 아빠가 투자금을 늘리든지, 아니면 선물을 조금 타협해야 할지도 모르겠다. 🤦‍♂️`;
+            resultMsg = `<span class="fail-msg">📊 목표까지 조금 더 필요해요.</span><br>${seedText}'${giftName}'의 미래 가격까지 <b>${Math.round(finalGiftValue - finalFutureValue).toLocaleString()}원</b>이 부족합니다. 월 납입금을 조금 늘리거나 투자 기간을 연장하면 목표를 달성할 수 있습니다.`;
         }
 
-        const text = `💌 <b>아빠의 팩트 폭격 편지:</b><br>네가 고른 <b>${giftName}</b>, 지금은 ${Math.round(giftCurrentValue/10000).toLocaleString()}만 원이지만 네가 ${targetAge}살이 되는 ${years}년 뒤엔 물가가 올라서 무려 <b>${Math.round(finalGiftValue).toLocaleString()}원</b>이 된단다.<br><br>${resultMsg}`;
+        const text = `💌 <b>아빠의 편지:</b><br>우리가 함께 고른 큰 선물 <b>${giftName}</b>은 현재 ${Math.round(giftCurrentValue/10000).toLocaleString()}만 원이지만, ${targetAge}살이 되는 ${years}년 후에는 물가 상승으로 <b>${Math.round(finalGiftValue).toLocaleString()}원</b>이 될 것으로 예상됩니다.<br><br>${resultMsg}`;
         
         document.getElementById('resText').innerHTML = text;
 
@@ -242,7 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const scheduleHtml = `
             <div class="tax-milestone-wrap">
                 <div class="tax-summary-banner">
-                    <h4>💡 아빠를 위한 절세 꿀팁: 증여세 비과세 마일스톤</h4>
+                    <h4>💡 알아두면 좋은 증여세 절세 가이드</h4>
                     <div class="tax-summary-total">총 ${Math.round(totalTaxFree / 10000).toLocaleString()}만 원</div>
                     <div class="tax-summary-sub">증여세 한 푼 없이 드릴 수 있는 최대 금액 · 10년마다 갱신</div>
                 </div>
@@ -287,7 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 labels: labels,
                 datasets: [
                     {
-                        label: '아빠의 펀드 자금',
+                        label: '아빠가 운용한 씨드머니',
                         data: dataFuture,
                         borderColor: '#FF9F0A',
                         backgroundColor: 'rgba(255, 159, 10, 0.10)',
