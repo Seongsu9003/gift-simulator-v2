@@ -626,6 +626,41 @@ input[type="number"]::-webkit-outer-spin-button {
     color: var(--text-muted);
 }
 
+/* 유기정기금 적립식 비과세 박스 */
+.milestone-annuity {
+    margin-top: 9px;
+    padding: 10px 12px;
+    background: rgba(0, 122, 255, 0.05);
+    border: 1px solid rgba(0, 122, 255, 0.15);
+    border-radius: 10px;
+    font-size: 0.82em;
+}
+
+.milestone-annuity-title {
+    font-weight: 700;
+    color: #0055CC;
+    margin-bottom: 6px;
+    font-size: 0.95em;
+}
+
+.milestone-annuity-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text-secondary);
+}
+
+.annuity-max {
+    color: #0055CC;
+    font-weight: 700;
+}
+
+.annuity-note {
+    margin-top: 5px;
+    color: var(--text-muted);
+    font-size: 0.85em;
+}
+
 /* ========================
    차트 컨테이너
 ======================== */

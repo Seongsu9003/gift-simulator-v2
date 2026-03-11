@@ -222,6 +222,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 detailHtml = `<div class="milestone-detail"><span class="milestone-action">지금 신고 가능! 세금 없이 드릴 수 있어요 🎁</span></div>`;
             }
 
+            // 유기정기금 비과세 최대 월납입액 계산 (완료 사이클 제외, 월납입금 있을 때만)
+            let annuityHtml = '';
+            if (stateClass !== 'is-done' && monthly > 0) {
+                const cycleStart = stateClass === 'is-active' ? currentAge : currentReportAge;
+                const cycleEnd = Math.min(cycleEndAge, targetAge);
+                const n = cycleEnd - cycleStart;
+                if (n > 0) {
+                    const pvFactor = (1 - Math.pow(1.03, -n)) / 0.03;
+                    const maxMonthly = limitAmountNum / (12 * pvFactor);
+                    annuityHtml = `
+                        <div class="milestone-annuity">
+                            <div class="milestone-annuity-title">📈 적립식 정기증여 비과세 한도 (유기정기금 3%)</div>
+                            <div class="milestone-annuity-row">
+                                <span>${n}년간 비과세 최대 월납입액</span>
+                                <span class="annuity-max">월 ${Math.floor(maxMonthly / 10000).toLocaleString()}만 원</span>
+                            </div>
+                            <div class="annuity-note">증여세 50만 원 이하는 과세미달로 실제 세금 없음</div>
+                        </div>`;
+                }
+            }
+
             milestonesHtml += `
                 <div class="milestone-item ${stateClass}">
                     <div class="milestone-dot"></div>
@@ -232,6 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                         <div class="milestone-limit">비과세 한도 ${limitAmountTxt} · ${personStatus}</div>
                         ${detailHtml}
+                        ${annuityHtml}
                     </div>
                 </div>`;
 
