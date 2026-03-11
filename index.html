@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>타버지가 만든 증여계산기</title>
+    <title>아빠가 만든 우리아이 증여 계산기</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -14,7 +14,7 @@
 <div class="page-wrapper">
 
     <div class="hero-section">
-        <h2>🧳 아빠의 '서른 살엔 독립해라' 계산기</h2>
+        <h2>아빠가 만든 우리아이 증여 계산기</h2>
         <p class="subtitle">우리 아이가 어른이 되는 날, 아빠의 사랑과 투자는 어떤 결과를 낳을까요?</p>
     </div>
 
@@ -87,7 +87,7 @@
                 </div>
 
                 <div class="input-group" style="margin-bottom: 0;">
-                    <label>매월 추가로 넣을 돈 (원)</label>
+                    <label>매월 납입 가능한 돈 (원)</label>
                     <input type="number" id="monthly" value="100000">
                     <div class="amount-helper" id="monthlyHelper"></div>
                 </div>
@@ -184,7 +184,7 @@
                             <span class="card-header-icon">🎯</span>
                             <div>
                                 <div class="card-title">시뮬레이션 결과</div>
-                                <div class="card-subtitle">아이가 <span id="resTargetAgeText">0</span>살이 될 때까지</div>
+                                <div class="card-subtitle">아이에게 선물할 때까지 운용한다면?</div>
                             </div>
                         </div>
                         <div id="achievementBadge" class="achievement-badge"></div>
@@ -198,7 +198,7 @@
                         </div>
                         <div class="metric-divider"></div>
                         <div class="metric-item">
-                            <div class="metric-label">목표 선물의 미래 가격</div>
+                            <div class="metric-label" id="resGoalLabel">선물의 미래 가격</div>
                             <div class="metric-value" id="resGoal">0원</div>
                             <div class="metric-approx" id="resGoalApprox"></div>
                         </div>
@@ -274,7 +274,7 @@
 
         <div class="cert-sub-block">
             <div class="cert-sub-row">
-                <span class="cert-sub-label">목표 선물의 미래 가격</span>
+                <span class="cert-sub-label" id="capGoalLabel">선물의 미래 가격</span>
                 <div class="cert-sub-right">
                     <span class="cert-sub-value" id="capGoal"></span>
                     <span class="cert-sub-approx" id="capGoalApprox"></span>

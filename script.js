@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ── 확약서 이미지 다운로드 ─────────────────────────────
     async function downloadCertificate() {
         // 1. 결과값 채우기
-        document.getElementById('capTargetAge').textContent     = document.getElementById('resTargetAgeText').textContent;
+        document.getElementById('capTargetAge').textContent     = document.getElementById('targetAge').value;
         document.getElementById('capFuture').textContent        = document.getElementById('resFuture').textContent;
         document.getElementById('capFutureApprox').textContent  = document.getElementById('resFutureApprox').textContent;
         document.getElementById('capGoal').textContent          = document.getElementById('resGoal').textContent;
@@ -194,11 +194,12 @@ document.addEventListener('DOMContentLoaded', () => {
             badge.className = 'achievement-badge fail';
         }
 
-        document.getElementById('resTargetAgeText').innerText = targetAge;
         document.getElementById('resFuture').innerText = Math.round(finalFutureValue).toLocaleString() + "원";
         document.getElementById('resFutureApprox').innerText = formatApproximateCurrency(Math.round(finalFutureValue));
         document.getElementById('resGoal').innerText = Math.round(finalGiftValue).toLocaleString() + "원";
         document.getElementById('resGoalApprox').innerText = formatApproximateCurrency(Math.round(finalGiftValue));
+        document.getElementById('resGoalLabel').innerText = `${giftName}의 미래 가격`;
+        document.getElementById('capGoalLabel').innerText = `${giftName}의 미래 가격`;
 
         let seedText = hasSeed ? `기존에 준비한 씨드머니 <b>${Math.round(seedAmount/10000).toLocaleString()}만 원</b>이 함께 운용되어 좋은 결과를 냈습니다. ` : ``;
 
@@ -209,7 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
             resultMsg = `<span class="fail-msg">📊 목표까지 조금 더 필요해요.</span><br>${seedText}'${giftName}'의 미래 가격까지 <b>${Math.round(finalGiftValue - finalFutureValue).toLocaleString()}원</b>이 부족합니다. 월 납입금을 조금 늘리거나 투자 기간을 연장하면 목표를 달성할 수 있습니다.`;
         }
 
-        const text = `💌 <b>아빠의 편지:</b><br>우리가 함께 고른 큰 선물 <b>${giftName}</b>은 현재 ${Math.round(giftCurrentValue/10000).toLocaleString()}만 원이지만, ${targetAge}살이 되는 ${years}년 후에는 물가 상승으로 <b>${Math.round(finalGiftValue).toLocaleString()}원</b>이 될 것으로 예상됩니다.<br><br>${resultMsg}`;
+        const text = `📊 <b>시뮬레이션 결과:</b><br>우리가 함께 고른 큰 선물 <b>${giftName}</b>은 현재 ${Math.round(giftCurrentValue/10000).toLocaleString()}만 원이지만, ${targetAge}살이 되는 ${years}년 후에는 물가 상승으로 <b>${Math.round(finalGiftValue).toLocaleString()}원</b>이 될 것으로 예상됩니다.<br><br>${resultMsg}`;
         
         document.getElementById('resText').innerHTML = text;
 
@@ -233,7 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const limitAmountNum = currentReportAge >= 19 ? 50000000 : 20000000;
             const limitAmountTxt = currentReportAge >= 19 ? '5,000만 원' : '2,000만 원';
             const personStatus = currentReportAge >= 19 ? '성인' : '미성년자';
-            const cycleEndAge = currentReportAge + 9;
+            const cycleEndAge = Math.min(currentReportAge + 9, targetAge - 1);
 
             // 상태 결정
             let stateClass, statusBadge;
@@ -260,7 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 detailHtml += `</div>`;
             } else if (stateClass === 'is-active') {
-                detailHtml = `<div class="milestone-detail"><span class="milestone-action">지금 신고 가능! 세금 없이 드릴 수 있어요 🎁</span></div>`;
+                detailHtml = `<div class="milestone-detail"><span class="milestone-action">지금 바로 증여하고 신고하세요! 🎁</span></div>`;
             } else {
                 // 미래/과거 일반 사이클일 때 한도 표시
                 detailHtml = `<div class="milestone-detail"><div class="milestone-used">${personStatus} · ${limitChip}</div></div>`;
@@ -290,7 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     annuityHtml = `
                         <div class="milestone-annuity">
                             <div class="milestone-annuity-row">
-                                <span>비과세 월 납입 한도</span>
+                                <span>세금없는 월 단위 최대 금액</span>
                                 <span class="annuity-max">${maxMonthlyTxt}</span>
                             </div>
                             ${overLimitHtml}
@@ -392,7 +393,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         tension: 0.4
                     },
                     {
-                        label: '선물 미래 가격',
+                        label: `${giftName}의 미래 가격`,
                         data: dataGoal,
                         borderColor: '#D63939',
                         borderWidth: 2,
