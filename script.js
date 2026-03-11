@@ -227,16 +227,23 @@ document.addEventListener('DOMContentLoaded', () => {
             if (stateClass !== 'is-done' && monthly > 0) {
                 const cycleStart = stateClass === 'is-active' ? currentAge : currentReportAge;
                 const cycleEnd = Math.min(cycleEndAge, targetAge);
-                const n = cycleEnd - cycleStart;
+                const n = cycleEnd - cycleStart + 1;  // 10세~19세 = 10년 (양 끝 포함)
                 if (n > 0) {
-                    const pvFactor = (1 - Math.pow(1.03, -n)) / 0.03;
-                    const maxMonthly = limitAmountNum / (12 * pvFactor);
+                    // 연차별 할인합산 방식 (유기정기금 평가명세 공식): Σ_{k=0}^{n-1} (1/1.03)^k
+                    const r = 1 / 1.03;
+                    const pvSum = (1 - Math.pow(r, n)) / (1 - r);
+                    // 과세미달 기준 포함: 비과세 한도 초과분이 50만원 이하이면 실세금 없음
+                    const effectiveLimit = limitAmountNum + 500000;
+                    const maxMonthly = Math.floor(effectiveLimit / (12 * pvSum) / 1000) * 1000;
+                    const man = Math.floor(maxMonthly / 10000);
+                    const cheon = Math.floor((maxMonthly % 10000) / 1000);
+                    const maxMonthlyTxt = cheon > 0 ? `${man}만 ${cheon}천 원` : `${man}만 원`;
                     annuityHtml = `
                         <div class="milestone-annuity">
                             <div class="milestone-annuity-title">📈 적립식 정기증여 비과세 한도 (유기정기금 3%)</div>
                             <div class="milestone-annuity-row">
                                 <span>${n}년간 비과세 최대 월납입액</span>
-                                <span class="annuity-max">월 ${Math.floor(maxMonthly / 10000).toLocaleString()}만 원</span>
+                                <span class="annuity-max">월 ${maxMonthlyTxt}</span>
                             </div>
                             <div class="annuity-note">증여세 50만 원 이하는 과세미달로 실제 세금 없음</div>
                         </div>`;
