@@ -161,6 +161,13 @@ document.addEventListener('DOMContentLoaded', () => {
         void resultContent.offsetWidth; // reflow to re-trigger animation
         resultContent.classList.add('is-visible');
 
+        // 모바일 최적화: 결과 영역으로 자동 스크롤
+        if (window.innerWidth <= 800) {
+            setTimeout(() => {
+                resultContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+
         // Achievement badge
         const badge = document.getElementById('achievementBadge');
         if (finalFutureValue >= finalGiftValue) {
