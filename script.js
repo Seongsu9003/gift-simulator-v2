@@ -175,55 +175,79 @@ document.addEventListener('DOMContentLoaded', () => {
         
         document.getElementById('resText').innerHTML = text;
 
-        // --- 증여세 스케줄 로직 고도화 ---
+        // --- 증여세 마일스톤 타임라인 ---
         let firstReportAge = hasSeed ? seedAge : currentAge;
-        let scheduleHtml = `
-            <div class="tax-tip">
-                <h4>💡 아빠를 위한 절세 꿀팁: 우리 아이 증여세 비과세 마일스톤</h4>
-                <p style="margin-top:0; margin-bottom:12px; font-size: 0.9em; color: #5f6368;">
-                    증여세 비과세 한도는 <b>10년마다 갱신</b>됩니다.<br>
-                    (미성년자 2천만 원, 성인 5천만 원) 기간 내에는 남은 한도만큼 세금 없이 더 줄 수 있습니다!
-                </p>
-                <ul style="line-height: 1.8;">
-        `;
 
-        let currentReportAge = firstReportAge;
-        let isFirstCycle = true;
-
-        while(currentReportAge <= targetAge) {
-            let limitAmountNum = currentReportAge >= 19 ? 50000000 : 20000000;
-            let limitAmountTxt = currentReportAge >= 19 ? "5,000만 원" : "2,000만 원";
-            let personStatus = currentReportAge >= 19 ? "성인" : "미성년자";
-            let cycleEndAge = currentReportAge + 9;
-            
-            let isPast = currentReportAge < currentAge;
-
-            if (isFirstCycle && hasSeed) {
-                let remaining = Math.max(0, limitAmountNum - seedAmount);
-                scheduleHtml += `<li style="color:#9aa0a6;"><del style='color:#bdc3c7;'><b>${currentReportAge}세</b> : 최초 신고 완료 (${Math.round(seedAmount/10000).toLocaleString()}만 원)</del></li>`;
-                
-                if (remaining > 0 && currentAge <= cycleEndAge) {
-                    scheduleHtml += `<li style="list-style-type: none; padding-left: 15px; margin-top: -5px; margin-bottom: 10px;">
-                        <span style="color:#d35400; font-weight:bold;">↳ 🚨 아직 한도가 남았어요! ${cycleEndAge}세까지 <span style="background-color:#ffecb3; padding:2px 6px; border-radius:4px; color:#b94a00;">${Math.round(remaining/10000).toLocaleString()}만 원</span> 추가 비과세 가능!</span>
-                    </li>`;
-                } else if (remaining > 0 && currentAge > cycleEndAge) {
-                    scheduleHtml += `<li style="list-style-type: none; padding-left: 15px; margin-top: -5px; margin-bottom: 10px;">
-                        <span style="font-size:0.85em; color:#bdc3c7;">↳ <del>(남은 한도 ${Math.round(remaining/10000).toLocaleString()}만 원은 ${cycleEndAge}세가 지나 소멸되었습니다)</del></span>
-                    </li>`;
-                }
-            } else {
-                let timeLabel = isPast ? "(이미 지남)" : (currentReportAge === currentAge ? "(지금 당장!)" : "(예정)");
-                let boldStart = isPast ? "<del style='color:#bdc3c7;'>" : "<b>";
-                let boldEnd = isPast ? "</del>" : "</b>";
-                let textColor = isPast ? "color:#9aa0a6;" : "color:#202124;";
-
-                scheduleHtml += `<li style="${textColor}">${boldStart}${currentReportAge}세 ${timeLabel} : ${limitAmountTxt} 비과세 한도 갱신 (${personStatus})${boldEnd}</li>`;
-            }
-            
-            currentReportAge += 10;
-            isFirstCycle = false;
+        // 총 비과세 가능 금액 계산
+        let totalTaxFree = 0;
+        let calcAge = firstReportAge;
+        while (calcAge <= targetAge) {
+            totalTaxFree += calcAge >= 19 ? 50000000 : 20000000;
+            calcAge += 10;
         }
-        scheduleHtml += `</ul></div>`;
+
+        let milestonesHtml = '';
+        let currentReportAge = firstReportAge;
+        let cycleIndex = 0;
+
+        while (currentReportAge <= targetAge) {
+            const isFirstCycle = cycleIndex === 0;
+            const limitAmountNum = currentReportAge >= 19 ? 50000000 : 20000000;
+            const limitAmountTxt = currentReportAge >= 19 ? '5,000만 원' : '2,000만 원';
+            const personStatus = currentReportAge >= 19 ? '성인' : '미성년자';
+            const cycleEndAge = currentReportAge + 9;
+
+            // 상태 결정
+            let stateClass, statusBadge;
+            if (cycleEndAge < currentAge) {
+                stateClass = 'is-done';   statusBadge = '✅ 완료';
+            } else if (currentReportAge <= currentAge) {
+                stateClass = 'is-active'; statusBadge = '🔥 진행 중';
+            } else {
+                stateClass = 'is-future'; statusBadge = '📅 예정';
+            }
+
+            // 상세 정보 (씨드머니 첫 사이클 / 진행중)
+            let detailHtml = '';
+            if (isFirstCycle && hasSeed) {
+                const remaining = Math.max(0, limitAmountNum - seedAmount);
+                detailHtml = `<div class="milestone-detail"><div class="milestone-used">신고 완료: ${Math.round(seedAmount / 10000).toLocaleString()}만 원 / 한도 ${limitAmountTxt}</div>`;
+                if (remaining > 0 && stateClass === 'is-active') {
+                    detailHtml += `<div style="margin-top:5px;"><span class="milestone-remaining">${Math.round(remaining / 10000).toLocaleString()}만 원 추가 가능</span><br><span class="milestone-action">↳ ${cycleEndAge}세 전까지 추가 신고하세요!</span></div>`;
+                } else if (remaining > 0 && stateClass === 'is-done') {
+                    detailHtml += `<div class="milestone-expired">↳ 남은 한도 ${Math.round(remaining / 10000).toLocaleString()}만 원은 ${cycleEndAge}세 이후 소멸</div>`;
+                }
+                detailHtml += `</div>`;
+            } else if (stateClass === 'is-active') {
+                detailHtml = `<div class="milestone-detail"><span class="milestone-action">지금 신고 가능! 세금 없이 드릴 수 있어요 🎁</span></div>`;
+            }
+
+            milestonesHtml += `
+                <div class="milestone-item ${stateClass}">
+                    <div class="milestone-dot"></div>
+                    <div class="milestone-card">
+                        <div class="milestone-header">
+                            <span class="milestone-status">${statusBadge}</span>
+                            <span class="milestone-ages">${currentReportAge}세 ~ ${cycleEndAge}세</span>
+                        </div>
+                        <div class="milestone-limit">비과세 한도 ${limitAmountTxt} · ${personStatus}</div>
+                        ${detailHtml}
+                    </div>
+                </div>`;
+
+            currentReportAge += 10;
+            cycleIndex++;
+        }
+
+        const scheduleHtml = `
+            <div class="tax-milestone-wrap">
+                <div class="tax-summary-banner">
+                    <h4>💡 아빠를 위한 절세 꿀팁: 증여세 비과세 마일스톤</h4>
+                    <div class="tax-summary-total">총 ${Math.round(totalTaxFree / 10000).toLocaleString()}만 원</div>
+                    <div class="tax-summary-sub">증여세 한 푼 없이 드릴 수 있는 최대 금액 · 10년마다 갱신</div>
+                </div>
+                <div class="milestone-timeline">${milestonesHtml}</div>
+            </div>`;
         document.getElementById('taxTipBox').innerHTML = scheduleHtml;
 
         // 차트 그리기

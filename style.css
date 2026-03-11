@@ -431,25 +431,196 @@ input[type="number"]::-webkit-outer-spin-button {
     margin-bottom: 6px;
 }
 
-/* 세금 팁 박스 */
-.tax-tip {
-    background: var(--success-bg);
-    border: 1px solid rgba(52, 199, 89, 0.25);
-    padding: 18px 20px;
+/* 증여세 마일스톤 타임라인 */
+.tax-milestone-wrap {
     border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid rgba(52, 199, 89, 0.22);
     font-size: 0.88em;
-    color: var(--text-secondary);
-    line-height: 1.65;
 }
 
-.tax-tip h4 {
+.tax-summary-banner {
+    background: linear-gradient(135deg, rgba(52, 199, 89, 0.13), rgba(52, 199, 89, 0.05));
+    padding: 14px 18px;
+    border-bottom: 1px solid rgba(52, 199, 89, 0.18);
+}
+
+.tax-summary-banner h4 {
     color: #1A8A3C;
     font-weight: 700;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
+    font-size: 1em;
 }
 
-.tax-tip ul { padding-left: 18px; }
-.tax-tip li { margin-bottom: 6px; }
+.tax-summary-total {
+    font-size: 1.45em;
+    font-weight: 800;
+    color: #1A8A3C;
+    letter-spacing: -0.5px;
+}
+
+.tax-summary-sub {
+    font-size: 0.82em;
+    color: var(--text-muted);
+    margin-top: 3px;
+}
+
+.milestone-timeline {
+    position: relative;
+    padding: 16px 14px 10px;
+    background: var(--panel);
+}
+
+.milestone-timeline::before {
+    content: '';
+    position: absolute;
+    left: 21px;
+    top: 24px;
+    bottom: 18px;
+    width: 2px;
+    background: linear-gradient(to bottom, #34C759 0%, #E5E5EA 100%);
+    border-radius: 2px;
+}
+
+.milestone-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.milestone-item:last-child { margin-bottom: 0; }
+
+.milestone-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 5px;
+    position: relative;
+    z-index: 1;
+}
+
+.milestone-item.is-done .milestone-dot {
+    background: #34C759;
+    border: 2px solid #2CA44C;
+}
+
+.milestone-item.is-active .milestone-dot {
+    background: var(--orange);
+    border: 2px solid #CC7700;
+    box-shadow: 0 0 0 4px var(--orange-glow);
+    animation: milestone-pulse 2s infinite;
+}
+
+.milestone-item.is-future .milestone-dot {
+    background: #C7C7CC;
+    border: 2px solid #AEAEB2;
+}
+
+@keyframes milestone-pulse {
+    0%, 100% { box-shadow: 0 0 0 4px var(--orange-glow); }
+    50%       { box-shadow: 0 0 0 8px rgba(255, 149, 0, 0.06); }
+}
+
+.milestone-card {
+    flex: 1;
+    background: var(--panel);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    line-height: 1.5;
+}
+
+.milestone-item.is-done .milestone-card {
+    background: var(--panel-secondary);
+    opacity: 0.72;
+}
+
+.milestone-item.is-active .milestone-card {
+    border: 1.5px solid var(--orange);
+    box-shadow: 0 0 0 3px var(--orange-dim);
+}
+
+.milestone-item.is-future .milestone-card {
+    border-style: dashed;
+}
+
+.milestone-header {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+}
+
+.milestone-status {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
+    font-size: 0.78em;
+    font-weight: 700;
+}
+
+.milestone-item.is-done .milestone-status {
+    background: rgba(52, 199, 89, 0.14);
+    color: #1A8A3C;
+}
+
+.milestone-item.is-active .milestone-status {
+    background: rgba(255, 149, 0, 0.15);
+    color: #CC5500;
+}
+
+.milestone-item.is-future .milestone-status {
+    background: rgba(142, 142, 147, 0.13);
+    color: var(--text-muted);
+}
+
+.milestone-ages {
+    font-size: 0.92em;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.milestone-item.is-done .milestone-ages {
+    color: var(--text-muted);
+    text-decoration: line-through;
+    text-decoration-color: #C7C7CC;
+}
+
+.milestone-limit {
+    font-size: 0.84em;
+    color: var(--text-secondary);
+}
+
+.milestone-detail {
+    margin-top: 6px;
+    font-size: 0.84em;
+}
+
+.milestone-used {
+    color: var(--text-muted);
+}
+
+.milestone-remaining {
+    display: inline-block;
+    background: #FFF3CD;
+    color: #B94A00;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-weight: 700;
+}
+
+.milestone-action {
+    color: #CC5500;
+    font-weight: 600;
+}
+
+.milestone-expired {
+    color: var(--text-muted);
+}
 
 /* 차트 컨테이너 */
 .chart-container {
