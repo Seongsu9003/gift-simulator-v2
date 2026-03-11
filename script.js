@@ -68,6 +68,24 @@ document.addEventListener('DOMContentLoaded', () => {
     btnCalculate.addEventListener('click', calculate);
     document.getElementById('btnDownload').addEventListener('click', downloadCertificate);
 
+    // 성년 후 자동 전환 토글: 나이 조건에 따라 활성화/비활성화
+    function updateAutoAdultToggleState() {
+        const currentAge = parseInt(document.getElementById('currentAge').value) || 0;
+        const targetAge = parseInt(document.getElementById('targetAge').value) || 0;
+        const toggle = document.getElementById('autoAdultToggle');
+        const wrap = document.getElementById('autoAdultWrap');
+        const disabled = currentAge >= 19 || targetAge <= 19;
+        toggle.disabled = disabled;
+        wrap.style.opacity = disabled ? '0.4' : '1';
+        if (disabled) {
+            toggle.checked = false;
+            document.getElementById('autoAdultHelper').innerText = '';
+        }
+    }
+    document.getElementById('currentAge').addEventListener('input', updateAutoAdultToggleState);
+    document.getElementById('targetAge').addEventListener('input', updateAutoAdultToggleState);
+    updateAutoAdultToggleState();
+
     // [New] 목표 선물 카드 선택 로직
     const giftCards = document.querySelectorAll('.gift-card');
     const giftSelect = document.getElementById('gift');
@@ -159,10 +177,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const monthlyRate = rate / 12;
         const totalMonths = years * 12;
-        
-        // 거치식 + 적립식 복리
+
+        // 성년 후 자동 최적 납입 전환
+        const isAutoAdult = document.getElementById('autoAdultToggle').checked && targetAge > 19 && currentAge < 19;
+        let autoAdultMonthly = monthly;
+        if (isAutoAdult) {
+            const adultCycleStart = 19;
+            const adultCycleEnd = Math.min(adultCycleStart + 9, targetAge - 1);
+            const n = adultCycleEnd - adultCycleStart + 1;
+            const r = 1 / 1.03;
+            const pvSum = (1 - Math.pow(r, n)) / (1 - r);
+            autoAdultMonthly = Math.floor((50000000 + 500000) / (12 * pvSum) / 1000) * 1000;
+        }
+
+        // 거치식 복리 (씨드머니)
         let fvSeed = seedAmount * Math.pow(1 + monthlyRate, totalMonths);
-        let fvMonthly = monthlyRate === 0 ? (monthly * totalMonths) : monthly * ((Math.pow(1 + monthlyRate, totalMonths) - 1) / monthlyRate);
+
+        // 적립식 복리 (미성년/성년 구간 분리)
+        const minorYears = isAutoAdult ? Math.min(19 - currentAge, years) : years;
+        const adultYears = isAutoAdult ? years - minorYears : 0;
+        const minorMonths = minorYears * 12;
+        const adultMonths = adultYears * 12;
+
+        let fvMonthly;
+        if (!isAutoAdult) {
+            fvMonthly = monthlyRate === 0
+                ? monthly * totalMonths
+                : monthly * ((Math.pow(1 + monthlyRate, totalMonths) - 1) / monthlyRate);
+        } else {
+            const fvMinor = monthlyRate === 0
+                ? monthly * minorMonths
+                : monthly * ((Math.pow(1 + monthlyRate, minorMonths) - 1) / monthlyRate);
+            const fvMinorGrown = fvMinor * Math.pow(1 + monthlyRate, adultMonths);
+            const fvAdult = monthlyRate === 0
+                ? autoAdultMonthly * adultMonths
+                : autoAdultMonthly * ((Math.pow(1 + monthlyRate, adultMonths) - 1) / monthlyRate);
+            fvMonthly = fvMinorGrown + fvAdult;
+        }
+
         let finalFutureValue = fvSeed + fvMonthly;
         
         // 선물의 미래 가치
@@ -210,9 +262,20 @@ document.addEventListener('DOMContentLoaded', () => {
             resultMsg = `<span class="fail-msg">📊 목표까지 조금 더 필요해요.</span><br>${seedText}'${giftName}'의 미래 가격까지 <b>${Math.round(finalGiftValue - finalFutureValue).toLocaleString()}원</b>이 부족합니다. 월 납입금을 조금 늘리거나 투자 기간을 연장하면 목표를 달성할 수 있습니다.`;
         }
 
-        const text = `📊 <b>시뮬레이션 결과:</b><br>우리가 함께 고른 큰 선물 <b>${giftName}</b>은 현재 ${Math.round(giftCurrentValue/10000).toLocaleString()}만 원이지만, ${targetAge}살이 되는 ${years}년 후에는 물가 상승으로 <b>${Math.round(finalGiftValue).toLocaleString()}원</b>이 될 것으로 예상됩니다.<br><br>${resultMsg}`;
-        
+        const autoAdultNote = isAutoAdult
+            ? `<div class="auto-adult-info">💡 19세부터 월 <b>${Math.round(autoAdultMonthly / 10000).toLocaleString()}만 원</b>으로 자동 전환 적용됨 (세금 없는 최대 기준)</div>`
+            : '';
+        const text = `${autoAdultNote}📊 <b>시뮬레이션 결과:</b><br>우리가 함께 고른 큰 선물 <b>${giftName}</b>은 현재 ${Math.round(giftCurrentValue/10000).toLocaleString()}만 원이지만, ${targetAge}살이 되는 ${years}년 후에는 물가 상승으로 <b>${Math.round(finalGiftValue).toLocaleString()}원</b>이 될 것으로 예상됩니다.<br><br>${resultMsg}`;
+
         document.getElementById('resText').innerHTML = text;
+
+        // 토글 helper text 업데이트
+        const autoAdultHelperEl = document.getElementById('autoAdultHelper');
+        if (isAutoAdult) {
+            autoAdultHelperEl.innerText = `19세부터 월 ${Math.round(autoAdultMonthly / 10000).toLocaleString()}만 원으로 자동 전환`;
+        } else {
+            autoAdultHelperEl.innerText = '';
+        }
 
         // --- 증여세 마일스톤 타임라인 ---
         let firstReportAge = hasSeed ? seedAge : currentAge;
@@ -337,17 +400,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
         for (let i = 1; i <= years; i++) {
             labels.push((currentAge + i) + '세');
-            let m = i * 12;
+            const ageAtYear = currentAge + i;
 
-            let currentFvSeed = seedAmount * Math.pow(1 + monthlyRate, m);
-            let currentFvMonthly = monthlyRate === 0 ? monthly * m : monthly * ((Math.pow(1 + monthlyRate, m) - 1) / monthlyRate);
+            // 토글 ON이면 19세 이후 구간 분리 계산
+            let currentFvSeed = seedAmount * Math.pow(1 + monthlyRate, i * 12);
+            let currentFvMonthly;
+            if (isAutoAdult && ageAtYear > 19) {
+                const mMinor = minorMonths; // 미성년 전체 구간
+                const mAdult = (ageAtYear - 19) * 12; // 성년 경과 개월
+                const fvMinor = monthlyRate === 0
+                    ? monthly * mMinor
+                    : monthly * ((Math.pow(1 + monthlyRate, mMinor) - 1) / monthlyRate);
+                const fvMinorGrown = fvMinor * Math.pow(1 + monthlyRate, mAdult);
+                const fvAdult = monthlyRate === 0
+                    ? autoAdultMonthly * mAdult
+                    : autoAdultMonthly * ((Math.pow(1 + monthlyRate, mAdult) - 1) / monthlyRate);
+                currentFvMonthly = fvMinorGrown + fvAdult;
+            } else {
+                const m = i * 12;
+                currentFvMonthly = monthlyRate === 0
+                    ? monthly * m
+                    : monthly * ((Math.pow(1 + monthlyRate, m) - 1) / monthlyRate);
+            }
             let totalFv = currentFvSeed + currentFvMonthly;
 
             let gv = giftCurrentValue * Math.pow(1 + inflation, i);
 
             // 예적금 (연 3% 고정) - 씨드머니 거치식 + 매월 납입 적립식
-            let svSeed = seedAmount * Math.pow(1 + savingsMonthlyRate, m);
-            let svMonthly = monthly * ((Math.pow(1 + savingsMonthlyRate, m) - 1) / savingsMonthlyRate);
+            let svSeed = seedAmount * Math.pow(1 + savingsMonthlyRate, i * 12);
+            let svMonthly = monthly * ((Math.pow(1 + savingsMonthlyRate, i * 12) - 1) / savingsMonthlyRate);
             let totalSv = svSeed + svMonthly;
 
             dataFuture.push(Math.round(totalFv));
