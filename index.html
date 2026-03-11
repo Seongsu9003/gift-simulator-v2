@@ -88,21 +88,19 @@
 
                 <div class="input-group">
                     <label>매월 납입 가능한 돈 (원)</label>
-                    <input type="number" id="monthly" value="100000">
-                    <div class="amount-helper" id="monthlyHelper"></div>
-                </div>
-
-                <div class="toggle-row" id="autoAdultWrap" style="margin-bottom: 0;">
-                    <div class="toggle-label-wrap">
-                        <span class="toggle-label">성년 후 최대 납입 자동 전환</span>
-                        <span class="toggle-sub">19세부터 세금 없는 최대 금액으로 올려요</span>
+                    <div class="payment-mode-selector">
+                        <button class="mode-chip active" id="modeDirectBtn" type="button">직접 입력</button>
+                        <button class="mode-chip" id="modeAutoBtn" type="button">납입한도 최대 적용</button>
                     </div>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="autoAdultToggle">
-                        <span class="slider round"></span>
-                    </label>
+                    <div id="monthlyDirectWrap">
+                        <input type="number" id="monthly" value="100000">
+                        <div class="amount-helper" id="monthlyHelper"></div>
+                    </div>
+                    <div id="monthlyAutoWrap" style="display: none;">
+                        <div class="monthly-auto-display" id="monthlyAutoDisplay"></div>
+                        <div class="amount-helper" id="monthlyAutoHelper"></div>
+                    </div>
                 </div>
-                <div class="amount-helper" id="autoAdultHelper" style="margin-top: 6px;"></div>
             </div>
 
             <!-- Section 3: 시뮬레이션 조건 -->

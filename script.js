@@ -68,23 +68,98 @@ document.addEventListener('DOMContentLoaded', () => {
     btnCalculate.addEventListener('click', calculate);
     document.getElementById('btnDownload').addEventListener('click', downloadCertificate);
 
-    // 성년 후 자동 전환 토글: 나이 조건에 따라 활성화/비활성화
-    function updateAutoAdultToggleState() {
+    // ── 월 납입 모드 셀렉터 ─────────────────────────────────
+    let paymentMode = 'direct'; // 'direct' | 'auto'
+
+    function calcMaxMonthly(limitAmount, startAge, endAge) {
+        const n = Math.min(endAge - startAge + 1, 10);
+        if (n <= 0) return 0;
+        const r = 1 / 1.03;
+        const pvSum = (1 - Math.pow(r, n)) / (1 - r);
+        return Math.floor((limitAmount + 500000) / (12 * pvSum) / 1000) * 1000;
+    }
+
+    function formatMonthlyKorean(v) {
+        const man = Math.floor(v / 10000);
+        const cheon = Math.floor((v % 10000) / 1000);
+        return cheon > 0 ? `${man}만 ${cheon}천 원` : `${man}만 원`;
+    }
+
+    function updateAutoDisplay() {
         const currentAge = parseInt(document.getElementById('currentAge').value) || 0;
-        const targetAge = parseInt(document.getElementById('targetAge').value) || 0;
-        const toggle = document.getElementById('autoAdultToggle');
-        const wrap = document.getElementById('autoAdultWrap');
-        const disabled = currentAge >= 19 || targetAge <= 19;
-        toggle.disabled = disabled;
-        wrap.style.opacity = disabled ? '0.4' : '1';
-        if (disabled) {
-            toggle.checked = false;
-            document.getElementById('autoAdultHelper').innerText = '';
+        const targetAge  = parseInt(document.getElementById('targetAge').value) || 0;
+        const displayEl  = document.getElementById('monthlyAutoDisplay');
+        const helperEl   = document.getElementById('monthlyAutoHelper');
+
+        if (targetAge <= currentAge) {
+            displayEl.innerHTML = '<span style="color:var(--text-muted);font-size:0.88em;">나이를 확인해 주세요.</span>';
+            helperEl.textContent = '';
+            return;
+        }
+
+        const isMinorOnly = currentAge < 19 && targetAge <= 19;
+        const isAdultOnly = currentAge >= 19;
+        const isMixed     = currentAge < 19 && targetAge > 19;
+        let html = '';
+
+        if (isMinorOnly) {
+            const maxM = calcMaxMonthly(20000000, currentAge, targetAge - 1);
+            html = `<div class="auto-display-row">
+                        <span class="auto-display-label">미성년자 구간 최대 월 납입</span>
+                        <span class="auto-display-value">${formatMonthlyKorean(maxM)}</span>
+                    </div>`;
+            helperEl.textContent = '2,000만 원 한도 기준 · 연 3% 현가 할인 적용';
+        } else if (isAdultOnly) {
+            const maxM = calcMaxMonthly(50000000, currentAge, targetAge - 1);
+            html = `<div class="auto-display-row">
+                        <span class="auto-display-label">성인 구간 최대 월 납입</span>
+                        <span class="auto-display-value">${formatMonthlyKorean(maxM)}</span>
+                    </div>`;
+            helperEl.textContent = '5,000만 원 한도 기준 · 연 3% 현가 할인 적용';
+        } else if (isMixed) {
+            const maxMinor = calcMaxMonthly(20000000, currentAge, 18);
+            const maxAdult = calcMaxMonthly(50000000, 19, targetAge - 1);
+            html = `<div class="auto-display-row">
+                        <span class="auto-display-label">미성년 구간 (${currentAge}~18세)</span>
+                        <span class="auto-display-value">${formatMonthlyKorean(maxMinor)}</span>
+                    </div>
+                    <div class="auto-display-divider"></div>
+                    <div class="auto-display-row">
+                        <span class="auto-display-label">성인 구간 (19~${targetAge - 1}세)</span>
+                        <span class="auto-display-value">${formatMonthlyKorean(maxAdult)}</span>
+                    </div>`;
+            helperEl.textContent = '구간별 한도 자동 적용 · 각 구간 연 3% 현가 할인';
+        }
+        displayEl.innerHTML = html;
+    }
+
+    function setPaymentMode(mode) {
+        paymentMode = mode;
+        const directBtn  = document.getElementById('modeDirectBtn');
+        const autoBtn    = document.getElementById('modeAutoBtn');
+        const directWrap = document.getElementById('monthlyDirectWrap');
+        const autoWrap   = document.getElementById('monthlyAutoWrap');
+
+        if (mode === 'direct') {
+            directBtn.classList.add('active');
+            autoBtn.classList.remove('active');
+            directWrap.style.display = 'block';
+            autoWrap.style.display   = 'none';
+        } else {
+            autoBtn.classList.add('active');
+            directBtn.classList.remove('active');
+            directWrap.style.display = 'none';
+            autoWrap.style.display   = 'block';
+            updateAutoDisplay();
         }
     }
-    document.getElementById('currentAge').addEventListener('input', updateAutoAdultToggleState);
-    document.getElementById('targetAge').addEventListener('input', updateAutoAdultToggleState);
-    updateAutoAdultToggleState();
+
+    document.getElementById('modeDirectBtn').addEventListener('click', () => setPaymentMode('direct'));
+    document.getElementById('modeAutoBtn').addEventListener('click',   () => setPaymentMode('auto'));
+
+    document.getElementById('currentAge').addEventListener('input', () => { if (paymentMode === 'auto') updateAutoDisplay(); });
+    document.getElementById('targetAge').addEventListener('input',  () => { if (paymentMode === 'auto') updateAutoDisplay(); });
+    // ──────────────────────────────────────────────────────
 
     // [New] 목표 선물 카드 선택 로직
     const giftCards = document.querySelectorAll('.gift-card');
@@ -167,51 +242,63 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         const years = targetAge - currentAge;
-        const monthly = parseFloat(document.getElementById('monthly').value);
+        const monthlyDirect = parseFloat(document.getElementById('monthly').value) || 0;
         const rate = parseFloat(document.getElementById('rate').value) / 100;
         const inflation = parseFloat(document.getElementById('inflation').value) / 100;
-        
+
         const giftSelect = document.getElementById('gift');
         const giftCurrentValue = parseFloat(giftSelect.value);
-        const giftName = giftSelect.options[giftSelect.selectedIndex].text.split(' (')[0]; 
+        const giftName = giftSelect.options[giftSelect.selectedIndex].text.split(' (')[0];
 
         const monthlyRate = rate / 12;
         const totalMonths = years * 12;
 
-        // 성년 후 자동 최적 납입 전환
-        const isAutoAdult = document.getElementById('autoAdultToggle').checked && targetAge > 19 && currentAge < 19;
-        let autoAdultMonthly = monthly;
-        if (isAutoAdult) {
-            const adultCycleStart = 19;
-            const adultCycleEnd = Math.min(adultCycleStart + 9, targetAge - 1);
-            const n = adultCycleEnd - adultCycleStart + 1;
-            const r = 1 / 1.03;
-            const pvSum = (1 - Math.pow(r, n)) / (1 - r);
-            autoAdultMonthly = Math.floor((50000000 + 500000) / (12 * pvSum) / 1000) * 1000;
+        // 납입 모드에 따른 유효 월납입액 결정
+        const isAutoMode  = (paymentMode === 'auto');
+        const isMinorOnly = currentAge < 19 && targetAge <= 19;
+        const isAdultOnly = currentAge >= 19;
+        const isMixed     = currentAge < 19 && targetAge > 19;
+
+        let effectiveMinorMonthly, effectiveAdultMonthly;
+        if (!isAutoMode) {
+            effectiveMinorMonthly = monthlyDirect;
+            effectiveAdultMonthly = monthlyDirect;
+        } else if (isMinorOnly) {
+            effectiveMinorMonthly = calcMaxMonthly(20000000, currentAge, targetAge - 1);
+            effectiveAdultMonthly = 0;
+        } else if (isAdultOnly) {
+            effectiveMinorMonthly = 0;
+            effectiveAdultMonthly = calcMaxMonthly(50000000, currentAge, targetAge - 1);
+        } else { // isMixed
+            effectiveMinorMonthly = calcMaxMonthly(20000000, currentAge, 18);
+            effectiveAdultMonthly = calcMaxMonthly(50000000, 19, targetAge - 1);
         }
+        // 단순 참조용 monthly (차트 예적금 비교, 텍스트 등에서 사용)
+        const monthly = isAutoMode
+            ? (isAdultOnly ? effectiveAdultMonthly : effectiveMinorMonthly)
+            : monthlyDirect;
 
         // 거치식 복리 (씨드머니)
         let fvSeed = seedAmount * Math.pow(1 + monthlyRate, totalMonths);
 
-        // 적립식 복리 (미성년/성년 구간 분리)
-        const minorYears = isAutoAdult ? Math.min(19 - currentAge, years) : years;
-        const adultYears = isAutoAdult ? years - minorYears : 0;
-        const minorMonths = minorYears * 12;
-        const adultMonths = adultYears * 12;
-
+        // 적립식 복리
         let fvMonthly;
-        if (!isAutoAdult) {
+        if (!isAutoMode || !isMixed) {
+            const m = isAutoMode ? (isAdultOnly ? effectiveAdultMonthly : effectiveMinorMonthly) : monthlyDirect;
             fvMonthly = monthlyRate === 0
-                ? monthly * totalMonths
-                : monthly * ((Math.pow(1 + monthlyRate, totalMonths) - 1) / monthlyRate);
+                ? m * totalMonths
+                : m * ((Math.pow(1 + monthlyRate, totalMonths) - 1) / monthlyRate);
         } else {
+            // 혼합: 미성년 구간 + 성인 구간 분리
+            const minorMonths = (19 - currentAge) * 12;
+            const adultMonths = (targetAge - 19) * 12;
             const fvMinor = monthlyRate === 0
-                ? monthly * minorMonths
-                : monthly * ((Math.pow(1 + monthlyRate, minorMonths) - 1) / monthlyRate);
+                ? effectiveMinorMonthly * minorMonths
+                : effectiveMinorMonthly * ((Math.pow(1 + monthlyRate, minorMonths) - 1) / monthlyRate);
             const fvMinorGrown = fvMinor * Math.pow(1 + monthlyRate, adultMonths);
             const fvAdult = monthlyRate === 0
-                ? autoAdultMonthly * adultMonths
-                : autoAdultMonthly * ((Math.pow(1 + monthlyRate, adultMonths) - 1) / monthlyRate);
+                ? effectiveAdultMonthly * adultMonths
+                : effectiveAdultMonthly * ((Math.pow(1 + monthlyRate, adultMonths) - 1) / monthlyRate);
             fvMonthly = fvMinorGrown + fvAdult;
         }
 
@@ -262,20 +349,19 @@ document.addEventListener('DOMContentLoaded', () => {
             resultMsg = `<span class="fail-msg">📊 목표까지 조금 더 필요해요.</span><br>${seedText}'${giftName}'의 미래 가격까지 <b>${Math.round(finalGiftValue - finalFutureValue).toLocaleString()}원</b>이 부족합니다. 월 납입금을 조금 늘리거나 투자 기간을 연장하면 목표를 달성할 수 있습니다.`;
         }
 
-        const autoAdultNote = isAutoAdult
-            ? `<div class="auto-adult-info">💡 19세부터 월 <b>${Math.round(autoAdultMonthly / 10000).toLocaleString()}만 원</b>으로 자동 전환 적용됨 (세금 없는 최대 기준)</div>`
-            : '';
+        let autoAdultNote = '';
+        if (isAutoMode) {
+            if (isMinorOnly) {
+                autoAdultNote = `<div class="auto-adult-info">💡 미성년자 구간 최대 월 <b>${formatMonthlyKorean(effectiveMinorMonthly)}</b> 적용 (2,000만 원 한도 기준)</div>`;
+            } else if (isAdultOnly) {
+                autoAdultNote = `<div class="auto-adult-info">💡 성인 구간 최대 월 <b>${formatMonthlyKorean(effectiveAdultMonthly)}</b> 적용 (5,000만 원 한도 기준)</div>`;
+            } else {
+                autoAdultNote = `<div class="auto-adult-info">💡 미성년 월 <b>${formatMonthlyKorean(effectiveMinorMonthly)}</b> → 19세부터 <b>${formatMonthlyKorean(effectiveAdultMonthly)}</b>으로 자동 전환 적용</div>`;
+            }
+        }
         const text = `${autoAdultNote}📊 <b>시뮬레이션 결과:</b><br>우리가 함께 고른 큰 선물 <b>${giftName}</b>은 현재 ${Math.round(giftCurrentValue/10000).toLocaleString()}만 원이지만, ${targetAge}살이 되는 ${years}년 후에는 물가 상승으로 <b>${Math.round(finalGiftValue).toLocaleString()}원</b>이 될 것으로 예상됩니다.<br><br>${resultMsg}`;
 
         document.getElementById('resText').innerHTML = text;
-
-        // 토글 helper text 업데이트
-        const autoAdultHelperEl = document.getElementById('autoAdultHelper');
-        if (isAutoAdult) {
-            autoAdultHelperEl.innerText = `19세부터 월 ${Math.round(autoAdultMonthly / 10000).toLocaleString()}만 원으로 자동 전환`;
-        } else {
-            autoAdultHelperEl.innerText = '';
-        }
 
         // --- 증여세 마일스톤 타임라인 ---
         let firstReportAge = hasSeed ? seedAge : currentAge;
@@ -402,25 +488,25 @@ document.addEventListener('DOMContentLoaded', () => {
             labels.push((currentAge + i) + '세');
             const ageAtYear = currentAge + i;
 
-            // 토글 ON이면 19세 이후 구간 분리 계산
             let currentFvSeed = seedAmount * Math.pow(1 + monthlyRate, i * 12);
             let currentFvMonthly;
-            if (isAutoAdult && ageAtYear > 19) {
-                const mMinor = minorMonths; // 미성년 전체 구간
-                const mAdult = (ageAtYear - 19) * 12; // 성년 경과 개월
+            if (isAutoMode && isMixed && ageAtYear > 19) {
+                const mMinor = (19 - currentAge) * 12;
+                const mAdult = (ageAtYear - 19) * 12;
                 const fvMinor = monthlyRate === 0
-                    ? monthly * mMinor
-                    : monthly * ((Math.pow(1 + monthlyRate, mMinor) - 1) / monthlyRate);
+                    ? effectiveMinorMonthly * mMinor
+                    : effectiveMinorMonthly * ((Math.pow(1 + monthlyRate, mMinor) - 1) / monthlyRate);
                 const fvMinorGrown = fvMinor * Math.pow(1 + monthlyRate, mAdult);
                 const fvAdult = monthlyRate === 0
-                    ? autoAdultMonthly * mAdult
-                    : autoAdultMonthly * ((Math.pow(1 + monthlyRate, mAdult) - 1) / monthlyRate);
+                    ? effectiveAdultMonthly * mAdult
+                    : effectiveAdultMonthly * ((Math.pow(1 + monthlyRate, mAdult) - 1) / monthlyRate);
                 currentFvMonthly = fvMinorGrown + fvAdult;
             } else {
+                const effM = isAutoMode ? (isAdultOnly ? effectiveAdultMonthly : effectiveMinorMonthly) : monthlyDirect;
                 const m = i * 12;
                 currentFvMonthly = monthlyRate === 0
-                    ? monthly * m
-                    : monthly * ((Math.pow(1 + monthlyRate, m) - 1) / monthlyRate);
+                    ? effM * m
+                    : effM * ((Math.pow(1 + monthlyRate, m) - 1) / monthlyRate);
             }
             let totalFv = currentFvSeed + currentFvMonthly;
 
