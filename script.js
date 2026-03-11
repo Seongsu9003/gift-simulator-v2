@@ -154,7 +154,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 결과창 UI 전환
         document.getElementById('placeholderMsg').style.display = 'none';
-        document.getElementById('resultContent').style.display = 'flex';
+
+        const resultContent = document.getElementById('resultContent');
+        resultContent.classList.remove('is-visible');
+        resultContent.style.display = 'flex';
+        void resultContent.offsetWidth; // reflow to re-trigger animation
+        resultContent.classList.add('is-visible');
+
+        // Achievement badge
+        const badge = document.getElementById('achievementBadge');
+        if (finalFutureValue >= finalGiftValue) {
+            badge.textContent = '✅ 목표 달성';
+            badge.className = 'achievement-badge success';
+        } else {
+            badge.textContent = '⚠️ 조금 부족해요';
+            badge.className = 'achievement-badge fail';
+        }
 
         document.getElementById('resTargetAgeText').innerText = targetAge;
         document.getElementById('resFuture').innerText = Math.round(finalFutureValue).toLocaleString() + "원";

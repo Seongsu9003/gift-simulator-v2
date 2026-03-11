@@ -19,114 +19,203 @@
     </div>
 
     <div class="calculator-wrapper">
+
+        <!-- ══════════════════════════════════════
+             입력 패널
+        ══════════════════════════════════════ -->
         <div class="panel input-panel">
 
-            <div class="input-group">
-                <label>0. 기존에 자녀 이름으로 저축해 두신 자금이 있나요?</label>
-                <div class="radio-group">
-                    <div class="radio-option">
-                        <input type="radio" name="hasSeed" id="seedYes" value="yes">
-                        <label for="seedYes">네, 기존에 준비해 둔 씨드머니가 있습니다</label>
-                    </div>
-                    <div class="radio-option">
-                        <input type="radio" name="hasSeed" id="seedNo" value="no" checked>
-                        <label for="seedNo">아니요, 지금부터 시작입니다 (0원)</label>
+            <!-- Section 1: 우리 아이 정보 -->
+            <div class="input-section">
+                <div class="section-header">
+                    <span class="section-icon">👶</span>
+                    <div>
+                        <div class="section-title">우리 아이 정보</div>
+                        <div class="section-desc">현재 나이와 목표 독립 나이를 설정하세요</div>
                     </div>
                 </div>
+
+                <div class="flex-row">
+                    <div class="input-group">
+                        <label>현재 나이 (세)</label>
+                        <input type="number" id="currentAge" value="1">
+                    </div>
+                    <div class="input-group">
+                        <label>목표 독립 나이 (세)</label>
+                        <input type="number" id="targetAge" value="30">
+                    </div>
+                </div>
             </div>
 
-            <div id="seedAmountGroup" class="hidden-group">
-                <div class="notice-box">
-                    💡 <b>안내:</b> 통장에 모여있는 '현재 가치'를 입력해 주세요. 이 금액도 앞으로 넣을 돈과 함께 굴러갑니다.
+            <!-- Section 2: 자금 준비 -->
+            <div class="input-section">
+                <div class="section-header">
+                    <span class="section-icon">💰</span>
+                    <div>
+                        <div class="section-title">자금 준비</div>
+                        <div class="section-desc">씨드머니와 매월 납입 계획을 입력하세요</div>
+                    </div>
                 </div>
+
                 <div class="input-group">
-                    <label class="accent-label">↳ 국세청에 증여세로 신고하셨습니까? 신고한 금액만 입력해주세요</label>
-                    <input type="number" id="seedAmount" value="2000000">
-                    <div class="amount-helper" id="seedAmountHelper"></div>
+                    <label>기존에 자녀 이름으로 준비해 두신 자금이 있나요?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" name="hasSeed" id="seedYes" value="yes">
+                            <label for="seedYes">네, 씨드머니가 있습니다</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="hasSeed" id="seedNo" value="no" checked>
+                            <label for="seedNo">아니요, 지금부터 시작입니다 (0원)</label>
+                        </div>
+                    </div>
                 </div>
-                <div class="input-group no-margin">
-                    <label class="accent-label">↳ 국세청에 신고할때 아이가 몇살이였나요?</label>
-                    <input type="number" id="seedAge" value="3" placeholder="예: 3">
+
+                <div id="seedAmountGroup" class="hidden-group">
+                    <div class="notice-box">
+                        💡 <b>안내:</b> 통장에 모여있는 '현재 가치'를 입력해 주세요. 이 금액도 앞으로 넣을 돈과 함께 굴러갑니다.
+                    </div>
+                    <div class="input-group">
+                        <label class="accent-label">↳ 국세청에 신고한 금액 (원)</label>
+                        <input type="number" id="seedAmount" value="2000000">
+                        <div class="amount-helper" id="seedAmountHelper"></div>
+                    </div>
+                    <div class="input-group no-margin">
+                        <label class="accent-label">↳ 신고 당시 아이의 나이 (세)</label>
+                        <input type="number" id="seedAge" value="3" placeholder="예: 3">
+                    </div>
+                </div>
+
+                <div class="input-group" style="margin-bottom: 0;">
+                    <label>매월 추가로 넣을 돈 (원)</label>
+                    <input type="number" id="monthly" value="100000">
+                    <div class="amount-helper" id="monthlyHelper"></div>
                 </div>
             </div>
 
-            <div class="flex-row">
+            <!-- Section 3: 시뮬레이션 조건 -->
+            <div class="input-section input-section--last">
+                <div class="section-header">
+                    <span class="section-icon">📊</span>
+                    <div>
+                        <div class="section-title">시뮬레이션 조건</div>
+                        <div class="section-desc">수익률과 목표 선물을 설정하세요</div>
+                    </div>
+                </div>
+
                 <div class="input-group">
-                    <label>1. 아이의 현재 나이 (세)</label>
-                    <input type="number" id="currentAge" value="1">
+                    <label>연평균 투자 수익률 (%)</label>
+                    <input type="number" id="rate" value="10.5">
+                    <p class="helper-text">💡 S&amp;P 500의 지난 3년 평균 수익률입니다. 원하시는 대로 수정해 보세요!</p>
                 </div>
+
                 <div class="input-group">
-                    <label>2. 목표 독립 나이 (세)</label>
-                    <input type="number" id="targetAge" value="30">
+                    <label>물가상승률 (%)</label>
+                    <input type="number" id="inflation" value="3.5">
+                    <p class="helper-text">💡 최근 3년 평균 물가상승률입니다. 인플레이션을 직접 조정해 보세요!</p>
                 </div>
-            </div>
 
-            <div class="input-group">
-                <label>3. 앞으로 매월 추가로 넣을 돈 (원)</label>
-                <input type="number" id="monthly" value="100000">
-                <div class="amount-helper" id="monthlyHelper"></div>
-            </div>
-
-            <div class="input-group">
-                <label>4. 증여 기간 동안 예상하는 연평균 투자 수익률 (%)</label>
-                <input type="number" id="rate" value="10.5">
-                <p class="helper-text">💡 S&P 500의 지난 3년 평균 수익률입니다. 원하시는 대로 수정해 보세요!</p>
-            </div>
-
-            <div class="input-group">
-                <label>5. 물가상승률 (%)</label>
-                <input type="number" id="inflation" value="3.5">
-                <p class="helper-text">💡 최근 3년 평균 물가상승률입니다. 인플레이션을 직접 조정해 보세요!</p>
-            </div>
-
-            <div class="input-group" style="margin-bottom: 5px;">
-                <label>6. 아이가 독립할 때 내가 해주고 싶은 선물은?</label>
-                <div class="select-wrapper">
-                    <select id="gift">
-                        <option value="40000000" selected>🎓 학자금 대출 상환 (현재가치: 4천만원)</option>
-                        <option value="100000000">💍 결혼 준비 자금 (현재가치: 1억원)</option>
-                        <option value="200000000">📈 투자 씨드머니 (현재가치: 2억원)</option>
-                        <option value="300000000">🏠 주택 마련 씨드머니 (현재가치: 3억원)</option>
-                    </select>
+                <div class="input-group" style="margin-bottom: 0;">
+                    <label>독립 선물 목표</label>
+                    <div class="select-wrapper">
+                        <select id="gift">
+                            <option value="40000000" selected>🎓 학자금 대출 상환 (현재가치: 4천만원)</option>
+                            <option value="100000000">💍 결혼 준비 자금 (현재가치: 1억원)</option>
+                            <option value="200000000">📈 투자 씨드머니 (현재가치: 2억원)</option>
+                            <option value="300000000">🏠 주택 마련 씨드머니 (현재가치: 3억원)</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
             <button id="btnCalculate" class="primary-btn">자녀 독립 자금 시뮬레이션 시작하기</button>
         </div>
 
-        <div class="panel result-panel">
-            <div class="placeholder-msg" id="placeholderMsg">
+        <!-- ══════════════════════════════════════
+             결과 패널 (카드 컨테이너)
+        ══════════════════════════════════════ -->
+        <div class="result-panel">
+
+            <!-- 초기 플레이스홀더 -->
+            <div class="result-section-card placeholder-card" id="placeholderMsg">
                 <span>👈</span>
-                <p>좌측에 조건을 모두 입력한 뒤<br><b>[시뮬레이션 돌리기]</b> 버튼을 눌러주세요!</p>
+                <p>좌측에 조건을 모두 입력한 뒤<br><b>[시뮬레이션 시작하기]</b> 버튼을 눌러주세요!</p>
             </div>
 
+            <!-- 결과 카드 래퍼 -->
             <div class="result-content" id="resultContent">
-                <div class="result-card">
-                    <div class="result-item">
-                        <span class="title">아이가 <span id="resTargetAgeText">0</span>살이 될 때 아빠가 쥐여줄 총 자금</span>
-                        <span class="value highlight" id="resFuture">0원</span>
-                        <div class="approx-value" id="resFutureApprox"></div>
+
+                <!-- Card 1: 핵심 결과 요약 -->
+                <div class="result-section-card hero-card">
+                    <div class="card-header">
+                        <div class="card-header-left">
+                            <span class="card-header-icon">🎯</span>
+                            <div>
+                                <div class="card-title">시뮬레이션 결과</div>
+                                <div class="card-subtitle">아이가 <span id="resTargetAgeText">0</span>살이 될 때까지</div>
+                            </div>
+                        </div>
+                        <div id="achievementBadge" class="achievement-badge"></div>
                     </div>
-                    <div class="result-item">
-                        <span class="title">내가 해주고픈 선물의 미래 가격 (물가 상승 반영)</span>
-                        <span class="value" id="resGoal">0원</span>
-                        <div class="approx-value" id="resGoalApprox"></div>
+
+                    <div class="hero-metrics">
+                        <div class="metric-item metric-main">
+                            <div class="metric-label">아빠가 마련한 총 자금</div>
+                            <div class="metric-value highlight" id="resFuture">0원</div>
+                            <div class="metric-approx" id="resFutureApprox"></div>
+                        </div>
+                        <div class="metric-divider"></div>
+                        <div class="metric-item">
+                            <div class="metric-label">목표 선물의 미래 가격</div>
+                            <div class="metric-value" id="resGoal">0원</div>
+                            <div class="metric-approx" id="resGoalApprox"></div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="explanation" id="resText"></div>
-
-                <div id="taxTipBox"></div>
-
-                <div class="chart-container">
-                    <canvas id="growthChart"></canvas>
+                <!-- Card 2: 자산 성장 분석 -->
+                <div class="result-section-card">
+                    <div class="card-header">
+                        <span class="card-header-icon">📈</span>
+                        <div>
+                            <div class="card-title">자산 성장 분석</div>
+                            <div class="card-subtitle">복리의 힘이 시간에 따라 만들어 가는 변화</div>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="growthChart"></canvas>
+                    </div>
+                    <div class="explanation" id="resText"></div>
                 </div>
 
-                <button id="btnDownload" class="download-btn">📄 결과를 이미지로 저장 후 공유하기</button>
+                <!-- Card 3: 증여세 절세 전략 -->
+                <div class="result-section-card">
+                    <div class="card-header">
+                        <span class="card-header-icon">🛡️</span>
+                        <div>
+                            <div class="card-title">증여세 절세 전략</div>
+                            <div class="card-subtitle">10년 주기 비과세 증여 플랜</div>
+                        </div>
+                    </div>
+                    <div id="taxTipBox"></div>
+                </div>
+
+                <!-- Card 4: 저장 & 공유 -->
+                <div class="result-section-card action-card">
+                    <div class="action-card-body">
+                        <div class="action-icon-wrap">📄</div>
+                        <div class="action-text">
+                            <div class="action-title">오늘의 계획을 저장하세요</div>
+                            <div class="action-desc">결과를 이미지로 저장해 배우자나 가족과 공유해 보세요.</div>
+                        </div>
+                    </div>
+                    <button id="btnDownload" class="download-btn">결과 이미지로 저장 · 공유하기</button>
+                </div>
+
             </div>
         </div>
-    </div>
 
+    </div>
 </div>
 
 <!-- 캡처용 인증서 템플릿 (평소 숨김) -->
