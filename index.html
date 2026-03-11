@@ -116,14 +116,46 @@
                 </div>
 
                 <div class="input-group" style="margin-bottom: 0;">
-                    <label>독립 선물 목표</label>
-                    <div class="select-wrapper">
-                        <select id="gift">
-                            <option value="40000000" selected>🎓 학자금 대출 상환 (현재가치: 4천만원)</option>
-                            <option value="100000000">💍 결혼 준비 자금 (현재가치: 1억원)</option>
-                            <option value="200000000">📈 투자 씨드머니 (현재가치: 2억원)</option>
-                            <option value="300000000">🏠 주택 마련 씨드머니 (현재가치: 3억원)</option>
-                        </select>
+                    <label>독립 선물 목표 (하나를 선택해 주세요)</label>
+                    
+                    <!-- 기존 Select (기능 유지, 숨김 처리) -->
+                    <select id="gift" style="display: none;">
+                        <option value="40000000" selected>학자금 대출 상환</option>
+                        <option value="100000000">결혼 준비 자금</option>
+                        <option value="200000000">투자 씨드머니</option>
+                        <option value="300000000">주택 마련 씨드머니</option>
+                    </select>
+
+                    <!-- 새로운 카드형 UI -->
+                    <div class="gift-grid">
+                        <div class="gift-card selected" data-value="40000000">
+                            <div class="gift-icon">🎓</div>
+                            <div class="gift-content">
+                                <div class="gift-title">학자금 상환</div>
+                                <div class="gift-price">4,000만 원</div>
+                            </div>
+                        </div>
+                        <div class="gift-card" data-value="100000000">
+                            <div class="gift-icon">💍</div>
+                            <div class="gift-content">
+                                <div class="gift-title">결혼 자금</div>
+                                <div class="gift-price">1억 원</div>
+                            </div>
+                        </div>
+                        <div class="gift-card" data-value="200000000">
+                            <div class="gift-icon">📈</div>
+                            <div class="gift-content">
+                                <div class="gift-title">투자 씨드</div>
+                                <div class="gift-price">2억 원</div>
+                            </div>
+                        </div>
+                        <div class="gift-card" data-value="300000000">
+                            <div class="gift-icon">🏠</div>
+                            <div class="gift-content">
+                                <div class="gift-title">주택 마련</div>
+                                <div class="gift-price">3억 원</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

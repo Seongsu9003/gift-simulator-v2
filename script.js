@@ -68,6 +68,22 @@ document.addEventListener('DOMContentLoaded', () => {
     btnCalculate.addEventListener('click', calculate);
     document.getElementById('btnDownload').addEventListener('click', downloadCertificate);
 
+    // [New] 목표 선물 카드 선택 로직
+    const giftCards = document.querySelectorAll('.gift-card');
+    const giftSelect = document.getElementById('gift');
+
+    giftCards.forEach(card => {
+        card.addEventListener('click', () => {
+            // 1. 시각적 선택 상태 변경
+            giftCards.forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+
+            // 2. 숨겨진 Select 값 업데이트
+            const value = card.getAttribute('data-value');
+            giftSelect.value = value;
+        });
+    });
+
     // ── 확약서 이미지 다운로드 ─────────────────────────────
     async function downloadCertificate() {
         // 1. 결과값 채우기
@@ -229,11 +245,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 stateClass = 'is-future'; statusBadge = '📅 예정';
             }
 
+            // 한도 정보 (칩 형태)
+            const limitChip = `<span class="milestone-limit-chip">${limitAmountTxt} 한도</span>`;
+
             // 상세 정보 (씨드머니 첫 사이클 / 진행중)
             let detailHtml = '';
             if (isFirstCycle && hasSeed) {
                 const remaining = Math.max(0, limitAmountNum - seedAmount);
-                detailHtml = `<div class="milestone-detail"><div class="milestone-used">신고 완료: ${Math.round(seedAmount / 10000).toLocaleString()}만 원 / 한도 ${limitAmountTxt}</div>`;
+                detailHtml = `<div class="milestone-detail"><div class="milestone-used">신고 완료: ${Math.round(seedAmount / 10000).toLocaleString()}만 원 / ${limitChip}</div>`;
                 if (remaining > 0 && stateClass === 'is-active') {
                     detailHtml += `<div style="margin-top:5px;"><span class="milestone-remaining">${Math.round(remaining / 10000).toLocaleString()}만 원 추가 가능</span><br><span class="milestone-action">↳ ${cycleEndAge}세 전까지 추가 신고하세요!</span></div>`;
                 } else if (remaining > 0 && stateClass === 'is-done') {
@@ -242,6 +261,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 detailHtml += `</div>`;
             } else if (stateClass === 'is-active') {
                 detailHtml = `<div class="milestone-detail"><span class="milestone-action">지금 신고 가능! 세금 없이 드릴 수 있어요 🎁</span></div>`;
+            } else {
+                // 미래/과거 일반 사이클일 때 한도 표시
+                detailHtml = `<div class="milestone-detail"><div class="milestone-used">${personStatus} · ${limitChip}</div></div>`;
             }
 
             // 유기정기금 비과세 최대 월납입액 계산 (완료 사이클 제외, 월납입금 있을 때만)
@@ -260,16 +282,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     const man = Math.floor(maxMonthly / 10000);
                     const cheon = Math.floor((maxMonthly % 10000) / 1000);
                     const maxMonthlyTxt = cheon > 0 ? `${man}만 ${cheon}천 원` : `${man}만 원`;
+                    
                     const overLimitHtml = monthly > maxMonthly ? `
-                            <div class="annuity-overlimit">⚠️ 현재 월 납입금(${Math.round(monthly / 10000)}만 원)이 비과세 한도를 초과합니다. 초과분에 대해 증여세가 과세될 수 있습니다.</div>` : '';
+                            <div class="annuity-overlimit">⚠️ 월 ${Math.round(monthly / 10000)}만 원 납입 시 한도 초과 가능성</div>` : '';
+                    
+                    // 간소화된 UI: 타이틀과 설명 제거하고 핵심 수치만 강조
                     annuityHtml = `
                         <div class="milestone-annuity">
-                            <div class="milestone-annuity-title">📈 적립식 정기증여 비과세 한도 (유기정기금 3%)</div>
                             <div class="milestone-annuity-row">
-                                <span>${n}년간 비과세 최대 월납입액</span>
-                                <span class="annuity-max">월 ${maxMonthlyTxt}</span>
+                                <span>비과세 월 납입 한도</span>
+                                <span class="annuity-max">${maxMonthlyTxt}</span>
                             </div>
-                            <div class="annuity-note">증여세 50만 원 이하는 과세미달로 실제 세금 없음</div>
                             ${overLimitHtml}
                         </div>`;
                 }
@@ -283,7 +306,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             <span class="milestone-status">${statusBadge}</span>
                             <span class="milestone-ages">${currentReportAge}세 ~ ${cycleEndAge}세</span>
                         </div>
-                        <div class="milestone-limit">비과세 한도 ${limitAmountTxt} · ${personStatus}</div>
                         ${detailHtml}
                         ${annuityHtml}
                     </div>
@@ -297,8 +319,8 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="tax-milestone-wrap">
                 <div class="tax-summary-banner">
                     <h4>💡 알아두면 좋은 증여세 절세 가이드</h4>
-                    <div class="tax-summary-total">총 ${Math.round(totalTaxFree / 10000).toLocaleString()}만 원</div>
-                    <div class="tax-summary-sub">증여세 한 푼 없이 드릴 수 있는 최대 금액 · 10년마다 갱신</div>
+                    <div class="tax-summary-total">총 ${Math.round(totalTaxFree / 10000).toLocaleString()}만 원 + α</div>
+                    <div class="tax-summary-sub">10년 주기 비과세 갱신 · 적립식 증여 시 연 3% 할인 혜택 적용</div>
                 </div>
                 <div class="milestone-timeline">${milestonesHtml}</div>
             </div>`;

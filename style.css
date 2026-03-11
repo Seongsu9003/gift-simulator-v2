@@ -433,6 +433,80 @@ input[type="number"]::-webkit-outer-spin-button {
 .hidden-group { display: none; margin-bottom: 26px; }
 
 /* ========================
+   목표 선물 선택 (카드 그리드)
+======================== */
+.gift-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.gift-card {
+    background: #FFFFFF;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+}
+
+.gift-card:hover {
+    border-color: var(--orange-500);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.gift-card.selected {
+    border-color: var(--orange-500);
+    background: var(--orange-50);
+    box-shadow: 0 0 0 3px var(--orange-glow);
+}
+
+.gift-icon {
+    font-size: 2em;
+    line-height: 1;
+}
+
+.gift-title {
+    font-size: 0.9em;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+}
+
+.gift-price {
+    font-size: 0.8em;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.gift-card.selected .gift-title {
+    color: var(--orange-600);
+}
+
+.gift-card.selected .gift-price {
+    color: var(--orange-500);
+    font-weight: 600;
+}
+
+@media (max-width: 400px) {
+    .gift-grid {
+        grid-template-columns: 1fr;
+    }
+    .gift-card {
+        flex-direction: row;
+        text-align: left;
+        padding: 14px 18px;
+    }
+}
+
+/* ========================
    메인 버튼
 ======================== */
 .primary-btn {
@@ -985,18 +1059,27 @@ input[type="number"]::-webkit-outer-spin-button {
     text-decoration-color: #C7C7CC;
 }
 
-.milestone-limit {
-    font-size: 0.84em;
+/* 타임라인 정보 칩 (비과세 한도 등) */
+.milestone-limit-chip {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--bg);
+    border-radius: 4px;
+    font-size: 0.8em;
     color: var(--text-secondary);
+    font-weight: 500;
+    margin-left: 6px;
+    border: 1px solid var(--border);
 }
 
 .milestone-detail {
-    margin-top: 7px;
-    font-size: 0.84em;
+    margin-top: 10px;
+    font-size: 0.88em;
 }
 
 .milestone-used {
-    color: var(--text-muted);
+    color: var(--text-secondary);
+    line-height: 1.5;
 }
 
 .milestone-remaining {
